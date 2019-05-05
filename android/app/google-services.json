@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "940614893575",
+    "firebase_url": "https://beacon-1177a.firebaseio.com",
+    "project_id": "beacon-1177a",
+    "storage_bucket": "beacon-1177a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940614893575:android:37266125a5e1c1b7",
+        "android_client_info": {
+          "package_name": "com.nulluw.beacon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "940614893575-mvv58dqr14ttog0jhlrcjd85k9f6gals.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr7t0PWGD-Fx0SlTIKJFbUTw_fglVfSrs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "940614893575-mvv58dqr14ttog0jhlrcjd85k9f6gals.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "940614893575-ribov04ecmccjicb6ukrsjq38ihq4mit.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nulluw.beacon"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
