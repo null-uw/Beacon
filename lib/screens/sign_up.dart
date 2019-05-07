@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// The sign up component will show up if the user had clicked on the sign up button from the sign in component.
+// The sign up component will also have a sign in button that can redirect back to the sign in component.
 class SignUp extends StatelessWidget {
   @override
   Widget build(BuildContext ctx) {

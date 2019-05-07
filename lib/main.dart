@@ -6,8 +6,7 @@ import 'screens/sign_in.dart';
 import 'screens/sign_up.dart';
 import 'screens/home_screen.dart';
 
-// void main() => runApp(MyApp());
-
+// Entry point for the Flutter application
 Future<void> main() async {
   final FirebaseApp app = await FirebaseApp.configure(
     name: 'db2',
