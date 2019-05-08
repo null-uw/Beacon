@@ -54,6 +54,22 @@ The following components are taken from the [Architecture Document](./ARCH.md) w
 | signUpButton | Joseph |
 | signInButton | Joseph |
 
+#### Client Actions
+
+| __Name__ | __Owner__ |
+| :------------------------------------------------------------: | :------------------------------------------------------------------: | 
+| signIn | Joseph |
+| signUp | Joseph |
+| logOut | Joseph |
+| getFriends | Matthew |
+| getAuthenticatedUser | Ben |
+| shareUserLocation | Ben |
+| userSearch | Ben |
+| sendUserFriendRequest | Ben |
+| getFriendRequest | Charlye |
+| rejectFriendRequest | Charlye |
+| acceptFriendRequest | Charlye |
+
 ### By what date will you have a release candidate?
 
 The release candidate will be ready by June 1st. We will dedicate the following four days for testing and fixing bugs. Our Bug Bash will take place on June 5th, where we will have real users test the application.
