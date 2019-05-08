@@ -9,6 +9,12 @@ import '../widgets/map-view.dart';
 import '../widgets/friend-list.dart';
 import '../widgets/current-user.dart';
 
+// The Home screen is the first screen that the user will see after logging in.
+// This screen has four view components and one connector component. The
+// views will take in their specified data and output a view that the user can
+// interact with. These views will also initiate actions that are specified
+// in a section below. There is also a connector component that shares data
+// between multiple components.
 class HomeScreen extends StatefulWidget {
   @override
   HomeScreenState createState() => new HomeScreenState();
