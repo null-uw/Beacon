@@ -36,7 +36,7 @@ class HomeScreenState extends State<HomeScreen> {
   // Handles changes to the user's friend node in Firebase Database.
   // Inner method 'iterateMapEntry' loops through returned snapshot,
   // instantiating new StreamSubscriptions if not found in state map.
-  _onChange(value) {
+  _onChange(Map value) {
     void iterateMapEntry(key, value) {
       if (!_locationSubscriptions.containsKey(key)) {
         FirebaseConnector.getUserLocationStream(key, _onLocationChange)
@@ -49,7 +49,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   // Handles changes to a user's location node in Firebase Database.
   // Updates state variable _userLocations with new value returned from Stream.
-  _onLocationChange(key, value) {
+  _onLocationChange(String key, Map value) {
     _userLocations[key] = value;
     print(_userLocations);
   }
