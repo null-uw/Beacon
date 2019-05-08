@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+// ReceivedRequest is a widget that renders a ListView of all received request within a Request widget
 class RecievedRequests extends StatelessWidget {
+  //Dummy Data
   final requestList = [
     Request("Charlye", "charlye@gmail.com"),
     Request("Ben", "Ben@gmail.com"),
@@ -10,38 +12,37 @@ class RecievedRequests extends StatelessWidget {
 
   @override
   Widget build(BuildContext ctx) {
-    return
-     new Container(
+    return new Expanded(
+      child: new Container(
         padding: new EdgeInsets.all(16.0),
-        child: 
-        new Column(
+        child: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             new Text("Requests",
                 style:
                     new TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
-    // new Expanded(
-    //child: 
-      new ListView.builder(
-                 scrollDirection: Axis.vertical,
-                 shrinkWrap: true,
+            new Expanded(
+              child: new ListView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
                 itemCount: this.requestList.length,
                 itemBuilder: (context, i) {
                   var request = this.requestList[i];
-                  return new EachRequest(request);
+                  return new SingleRequest(request);
                 },
               ),
-    
-               
+            )
           ],
         ),
-     );
+      ),
+    );
   }
 }
 
-class EachRequest extends StatelessWidget {
+//SinlgeRequest is a widget that renders a single request, it displays the users name and email. It also renders 2 buttons to allow the user to either deny or accept the request
+class SingleRequest extends StatelessWidget {
   final request;
-  EachRequest(this.request);
+  SingleRequest(this.request);
 
   @override
   Widget build(BuildContext ctx) {
@@ -86,19 +87,23 @@ class EachRequest extends StatelessWidget {
   }
 }
 
+// Temporary Request Object that contains a users name & email
 class Request {
   String name;
   String email;
 
+// Request Constructor
   Request(String name, String email) {
     this.name = name;
     this.email = email;
   }
 
+// Returns users name
   String getName() {
     return this.name;
   }
 
+// Returns users email
   String getEmail() {
     return this.email;
   }
