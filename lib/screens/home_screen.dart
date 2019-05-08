@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'dart:async';
-
+import './../utilities/firebase-connector.dart';
 import 'friend_preferences.dart';
 import '../widgets/map-view.dart';
 import '../widgets/friend-list.dart';
@@ -30,7 +27,7 @@ class HomeScreenState extends State<HomeScreen> {
     _locationSubscriptions = new Map();
     _userLocations = new Map();
 
-    FirebaseUserConnector.getUserFriendStream(_onChange)
+    FirebaseConnector.getUserFriendStream(_onChange)
         .then((StreamSubscription s) => _subscriptionFriends = s);
 
     super.initState();
@@ -42,7 +39,7 @@ class HomeScreenState extends State<HomeScreen> {
   _onChange(value) {
     void iterateMapEntry(key, value) {
       if (!_locationSubscriptions.containsKey(key)) {
-        FirebaseUserConnector.getUserLocationStream(key, _onLocationChange)
+        FirebaseConnector.getUserLocationStream(key, _onLocationChange)
             .then((StreamSubscription s) => _locationSubscriptions[key] = s);
       }
     }
@@ -129,37 +126,4 @@ class HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class FirebaseUserConnector {
-  static Future<StreamSubscription<Event>> getUserFriendStream(
-      void onData(dynamic)) async {
-    //FirebaseUser currentUser = await FirebaseAuth.instance.currentUser();
 
-    // Creates a StreamSubscription to the current user's friend node in FB database.
-    StreamSubscription<Event> subscription = FirebaseDatabase.instance
-        .reference()
-        .child("users")
-        .child(
-            "uid") // hardcoded to grab uid in FB. Will be changed to currenUser.uid once auth is established
-        .child("friends")
-        .onValue
-        .listen((Event event) {
-      onData(event.snapshot.value);
-    });
-
-    return subscription;
-  }
-
-  // Creates a StreamSubscription to a location node in FB database.
-  static Future<StreamSubscription<Event>> getUserLocationStream(
-      String userKey, void onData(String, dynamic)) async {
-    StreamSubscription<Event> subscription = FirebaseDatabase.instance
-        .reference()
-        .child("locations")
-        .child(userKey)
-        .onValue
-        .listen((Event event) {
-      onData(userKey, event.snapshot.value);
-    });
-    return subscription;
-  }
-}
