@@ -138,21 +138,6 @@ locations: {
 | When the user clicks the ‘Sign out’ button on the modal, the application must un-authenticate the current user and redirect to the ‘Landing’ Screen within two seconds. |    We will manually test this by clicking the ‘Sign out’ option on the signout modal. We will verify that a successful sign out has been accomplished by following these criteria: <br> <br> 1. User’s location node in Firebase has been updated to have NO location. Location node should appear as __Figure 2__  <br> <br> 2. In the network timeline of the device, a Firebase un-authentication call has been made <br> <br> 3. The User is redirected to the Signup Screen’ within 2 seconds of clicking ‘Sign out’. <br> <br> 4. Upon exiting and re-entering the application, no user auth session is present and the ‘Sign up’ page is displayed.|
 | When the user clicks the ‘Cancel’ button on the popup, the application must close the modal and re-display the ‘User Home’ screen. | We will manually verify that when a user clicks on the “cancel” button on the popup, it closes the modal and re-displays the Home Screen. |
 
-##### Figure 3
-~~~~
-locations: {
-     uid: {
-          name: String,
-          email: String,
-          location: {
-               lat: double,
-               lng: double
-          }
-     }
-}
-~~~~
-
-
 
 ### Friend Preferences
 
