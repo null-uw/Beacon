@@ -98,9 +98,9 @@ Our project aims to implement a new type of on-demand location sharing to help c
 | When a user’s friend beacon is off, they will be considered in the ‘inactive’ state and the software must not display their marker on the user’s map and list them as ‘inactive’ in the user’s friend list.| We will manually verify that the user’s who are shown in an inactive state have database entries as shown below. <br><br> User’s location node should appear as __Figure 2__
 | The application must display 'active' users on the map with a circle marker of a randomly generated color and the user’s first initial in the middle.  |We will manually verify that all of the user’s friends who have active states in the database are displayed on the map.
 | The application must display users who have their beacon ‘ON’ above users who have their beacon ‘OFF’ in the user list.| We will manually verify that the list is sorted to have active users on top of inactive users.|
-| The application must capture the current user’s location and share to all of the user’s followers if they toggle the beacon form ‘inactive’ to ‘active’| We will manually verify that the user’s location node is updated when the Beacon toggle is turned on. <br> <br> User’s location node should appear as __Figure 3__
-|The application must not display the current user’s location to any of their followers if the current user toggles their beacon from ‘active’ to ‘inactive’. | We will manually verify that the user’s location node is updated to be without their location when the Beacon toggle is turned on. <br> <br> User’s location node should appear as __Figure 4__
-|The user’s current location must not be sent to any data storage solutions when the Beacon toggle is off.| We will manually verify that the user’s location node is removed from the user’s locations in the database. While the user’s “ and “email” will remain, the user’s “location” should not be included in the database’s locations as shown in __Figure 5__
+| The application must capture the current user’s location and share to all of the user’s followers if they toggle the beacon form ‘inactive’ to ‘active’| We will manually verify that the user’s location node is updated when the Beacon toggle is turned on. <br> <br> User’s location node should appear as __Figure 1__
+|The application must not display the current user’s location to any of their followers if the current user toggles their beacon from ‘active’ to ‘inactive’. | We will manually verify that the user’s location node is updated to be without their location when the Beacon toggle is turned on. <br> <br> User’s location node should appear as __Figure 2__
+|The user’s current location must not be sent to any data storage solutions when the Beacon toggle is off.| We will manually verify that the user’s location node is removed from the user’s locations in the database. While the user’s “ and “email” will remain, the user’s “location” should not be included in the database’s locations as shown in __Figure 2__
 | The user’s current location must be shared with the user’s friends when the Beacon toggle is on. When the Home screen is loaded, the application must call the database and load all of the current user ‘active’ friend’s locations.| We will manually verify that all of the Firebase streams are established when the User home screen is initialized. This is verifiable by checking for location updates when data on the database is changed. This can be done via the Firebase console on a test account.
 |The software must redirect the screen to the ‘Friend Preference’ screen if the ‘Friend Preference’ icon is clicked. | We will manually test that when the icon is clicked, it will route to the “Friend Preference” screen|
 
@@ -125,65 +125,20 @@ locations: {
      uid: {
           name: String,
           email: String,
-          location: {
-               lat: double,
-               lng: double
-          }
-     }
+      }
 }
 ~~~~
 
-##### Figure 3
-~~~~
-locations: {
-     uid: {
-          name: String,
-          email: String,
-          location: {
-               lat: double,
-               lng: double
-          }
-     }
-}
-~~~~
-
-##### Figure 4
-~~~~
-locations: {
-     uid: {
-          name: String,
-          email: String,
-          location: {
-               lat: double,
-               lng: double
-          }
-     }
-}
-~~~~
-
-##### Figure 5
-~~~~
-locations: {
-     uid: {
-          name: String,
-          email: String,
-          location: {
-               lat: double,
-               lng: double
-          }
-     }
-}
-~~~~
 
 ### User Home Screen: Signout Behavior Requirements
 
 | Requirement|Verification|
 |----------|----------|
 | When the user clicks the top left ‘Sign out’ icon, the application must display a modal within one second with two options (‘Sign out’ or ‘Cancel’) to confirm the user’s action. |  We will manually test this by clicking on the sign out icon and timing that the modal displays in 1 second. <br> <br> We will manually verify that there the two options displayed are ‘Sign out’ and ‘Cancel’
-| When the user clicks the ‘Sign out’ button on the modal, the application must un-authenticate the current user and redirect to the ‘Landing’ Screen within two seconds. |    We will manually test this by clicking the ‘Sign out’ option on the signout modal. We will verify that a successful sign out has been accomplished by following these criteria: <br> <br> 1. User’s location node in Firebase has been updated to have NO location. Location node should appear as __Figure 6__  <br> <br> 2. In the network timeline of the device, a Firebase un-authentication call has been made <br> <br> 3. The User is redirected to the Signup Screen’ within 2 seconds of clicking ‘Sign out’. <br> <br> 4. Upon exiting and re-entering the application, no user auth session is present and the ‘Sign up’ page is displayed.|
+| When the user clicks the ‘Sign out’ button on the modal, the application must un-authenticate the current user and redirect to the ‘Landing’ Screen within two seconds. |    We will manually test this by clicking the ‘Sign out’ option on the signout modal. We will verify that a successful sign out has been accomplished by following these criteria: <br> <br> 1. User’s location node in Firebase has been updated to have NO location. Location node should appear as __Figure 2__  <br> <br> 2. In the network timeline of the device, a Firebase un-authentication call has been made <br> <br> 3. The User is redirected to the Signup Screen’ within 2 seconds of clicking ‘Sign out’. <br> <br> 4. Upon exiting and re-entering the application, no user auth session is present and the ‘Sign up’ page is displayed.|
 | When the user clicks the ‘Cancel’ button on the popup, the application must close the modal and re-display the ‘User Home’ screen. | We will manually verify that when a user clicks on the “cancel” button on the popup, it closes the modal and re-displays the Home Screen. |
 
-##### Figure 6
+##### Figure 3
 ~~~~
 locations: {
      uid: {
