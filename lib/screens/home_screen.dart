@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:math';
 import './../utilities/firebase-connector.dart';
 import 'friend_preferences.dart';
 import '../widgets/map-view.dart';
@@ -50,7 +51,25 @@ class HomeScreenState extends State<HomeScreen> {
   // Handles changes to a user's location node in Firebase Database.
   // Updates state variable _userLocations with new value returned from Stream.
   _onLocationChange(String key, Map value) {
-    _userLocations[key] = value;
+    // var temp = _userLocations;
+    // temp[key] = value;
+
+    HSLColor color;
+    if (!_userLocations.containsKey(key)) {
+      Random random = new Random();
+      double hue = random.nextInt(360).toDouble();
+      color = HSLColor.fromAHSL(1, hue, 1, .5);
+      value['hue'] = hue;
+      value['color'] = color;
+    } else {
+      color = value['color'];
+    }
+
+    value['color'] = color;
+
+    setState(() {
+      _userLocations[key] = value;
+    });
     print(_userLocations);
   }
 
@@ -118,12 +137,10 @@ class HomeScreenState extends State<HomeScreen> {
         ),
         body: Column(
           children: <Widget>[
-            Expanded(child: MapView()),
-            Expanded(child: FriendList()),
+            Expanded(child: MapView(data: _userLocations)),
+            FriendList(data: _userLocations),
             CurrentUser()
           ],
         ));
   }
 }
-
-
