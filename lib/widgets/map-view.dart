@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong/latlong.dart';
 
 class MapView extends StatefulWidget {
   final Map data;
@@ -14,25 +16,17 @@ class MapView extends StatefulWidget {
 
 class _MapState extends State<MapView> {
   final Map data;
-
+  MapController mapController;
   _MapState(this.data);
 
-  Completer<GoogleMapController> _controller = Completer();
-  GoogleMapController mapController;
-  BitmapDescriptor _markerIcon;
-  static const LatLng _center = const LatLng(47.6062, -122.3321);
-
-  void _onMapCreated(GoogleMapController controller) {
-    setState(() {
-      mapController = controller;
-    });
-
-    _controller.complete(controller);
+  @override
+  void initState() {
+    super.initState();
+    mapController = MapController();
   }
 
   @override
   Widget build(BuildContext context) {
-    _createMarkerImageFromAsset(context);
     final Set<Marker> _markers = {};
 
     for (var key in data.keys) {
@@ -43,38 +37,45 @@ class _MapState extends State<MapView> {
         double lat = user['location']['lat'];
         double lng = user['location']['lng'];
 
-        _markers.add(Marker(
-            markerId: MarkerId(key),
-            position: new LatLng(lat, lng),
-            infoWindow: InfoWindow(title: user['name'], snippet: user['email']),
-            icon: _markerIcon));
+        _markers.add(new Marker(
+          width: 40.0,
+          height: 40.0,
+          point: new LatLng(lat, lng),
+          builder: (ctx) => new Container(
+                child: new RawMaterialButton(
+                  constraints: BoxConstraints.tight(Size(40, 40)),
+                  onPressed: null,
+                  child: Text(user['name'][0].toUpperCase(),
+                      textAlign: TextAlign.center),
+                  shape: new CircleBorder(),
+                  elevation: 0.0,
+                  fillColor: user['color'],
+                ),
+              ),
+        ));
       }
     }
 
-    return GoogleMap(
-      onMapCreated: _onMapCreated,
-      markers: _markers,
-      initialCameraPosition: CameraPosition(
-        target: _center,
-        zoom: 11.0,
+    return new FlutterMap(
+      options: new MapOptions(
+        center: new LatLng(47.608013, -122.335167),
+        zoom: 13.0,
       ),
-      myLocationEnabled: true,
+      mapController: mapController,
+      layers: [
+        new TileLayerOptions(
+          urlTemplate: "https://api.tiles.mapbox.com/v4/"
+              "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
+          additionalOptions: {
+            'accessToken':
+                'pk.eyJ1IjoibWF0dGhld2tsaTk3IiwiYSI6ImNqMzE5M254MjAwMHYzMm1ydG43MnV6cm8ifQ.lMMwzXJokvtW4hispPYEIg',
+            'id': 'mapbox.streets',
+          },
+        ),
+        new MarkerLayerOptions(
+          markers: _markers.toList(),
+        ),
+      ],
     );
-  }
-
-  Future<void> _createMarkerImageFromAsset(BuildContext context) async {
-    if (_markerIcon == null) {
-      final ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context);
-      BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/images/blob_1.png')
-          .then(_updateBitmap);
-    }
-  }
-
-  void _updateBitmap(BitmapDescriptor bitmap) {
-    setState(() {
-      _markerIcon = bitmap;
-    });
   }
 }

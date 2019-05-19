@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
+import 'package:random_color/random_color.dart';
 import './../utilities/firebase-connector.dart';
 import 'friend_preferences.dart';
 import '../widgets/map-view.dart';
@@ -22,6 +23,8 @@ class HomeScreenState extends State<HomeScreen> {
   StreamSubscription _subscriptionFriends;
   Map<String, StreamSubscription> _locationSubscriptions;
   Map<String, dynamic> _userLocations;
+  Random random = new Random();
+  RandomColor _randomColor = RandomColor();
 
   @override
   void initState() {
@@ -51,15 +54,9 @@ class HomeScreenState extends State<HomeScreen> {
   // Handles changes to a user's location node in Firebase Database.
   // Updates state variable _userLocations with new value returned from Stream.
   _onLocationChange(String key, Map value) {
-    // var temp = _userLocations;
-    // temp[key] = value;
-
-    HSLColor color;
+    Color color;
     if (!_userLocations.containsKey(key)) {
-      Random random = new Random();
-      double hue = random.nextInt(360).toDouble();
-      color = HSLColor.fromAHSL(1, hue, 1, .5);
-      value['hue'] = hue;
+      color = _randomColor.randomColor(colorBrightness: ColorBrightness.light);
       value['color'] = color;
     } else {
       color = value['color'];
@@ -70,7 +67,6 @@ class HomeScreenState extends State<HomeScreen> {
     setState(() {
       _userLocations[key] = value;
     });
-    print(_userLocations);
   }
 
   // Destroys all streams when Widget is unmounted.

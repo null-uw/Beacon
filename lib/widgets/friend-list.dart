@@ -35,7 +35,7 @@ class SingleFriendRow extends StatelessWidget {
               child: Text(user['name'][0].toUpperCase(), textAlign: TextAlign.center),
               shape: new CircleBorder(),
               elevation: 0.0,
-              fillColor: user['color'].toColor(),
+              fillColor: user['color'],
             ),
             new Expanded(
               child: new Container( 
