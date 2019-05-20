@@ -1,28 +1,44 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 
 class MapView extends StatefulWidget {
   final Map data;
+  final MapController mapController;
 
-  MapView({this.data});
+  MapView({this.data, this.mapController});
 
   @override
-  _MapState createState() => _MapState(this.data);
+  _MapState createState() => _MapState(this.data, this.mapController);
 }
 
 class _MapState extends State<MapView> {
   final Map data;
   MapController mapController;
-  _MapState(this.data);
+
+  _MapState(this.data, this.mapController);
 
   @override
   void initState() {
     super.initState();
-    mapController = MapController();
+  }
+
+  Marker buildFriendMarker(String name, Color color, double lat, double lng) {
+    return new Marker(
+      width: 40.0,
+      height: 40.0,
+      point: new LatLng(lat, lng),
+      builder: (ctx) => new Container(
+            child: new RawMaterialButton(
+              constraints: BoxConstraints.tight(Size(40, 40)),
+              onPressed: null,
+              child: Text(name[0].toUpperCase(), textAlign: TextAlign.center),
+              shape: new CircleBorder(),
+              elevation: 0.0,
+              fillColor: color,
+            ),
+          ),
+    );
   }
 
   @override
@@ -37,22 +53,7 @@ class _MapState extends State<MapView> {
         double lat = user['location']['lat'];
         double lng = user['location']['lng'];
 
-        _markers.add(new Marker(
-          width: 40.0,
-          height: 40.0,
-          point: new LatLng(lat, lng),
-          builder: (ctx) => new Container(
-                child: new RawMaterialButton(
-                  constraints: BoxConstraints.tight(Size(40, 40)),
-                  onPressed: null,
-                  child: Text(user['name'][0].toUpperCase(),
-                      textAlign: TextAlign.center),
-                  shape: new CircleBorder(),
-                  elevation: 0.0,
-                  fillColor: user['color'],
-                ),
-              ),
-        ));
+        _markers.add(buildFriendMarker(user['name'], user['color'], lat, lng));
       }
     }
 

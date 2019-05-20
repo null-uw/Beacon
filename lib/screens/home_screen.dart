@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:random_color/random_color.dart';
@@ -20,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+  MapController mapController;
   StreamSubscription _subscriptionFriends;
   Map<String, StreamSubscription> _locationSubscriptions;
   Map<String, dynamic> _userLocations;
@@ -30,6 +32,7 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     _locationSubscriptions = new Map();
     _userLocations = new Map();
+    mapController = new MapController();
 
     FirebaseConnector.getUserFriendStream(_onChange)
         .then((StreamSubscription s) => _subscriptionFriends = s);
@@ -55,14 +58,17 @@ class HomeScreenState extends State<HomeScreen> {
   // Updates state variable _userLocations with new value returned from Stream.
   _onLocationChange(String key, Map value) {
     Color color;
-    if (!_userLocations.containsKey(key)) {
-      color = _randomColor.randomColor(colorBrightness: ColorBrightness.light);
-      value['color'] = color;
-    } else {
-      color = value['color'];
+    if (value.containsKey('location')) {
+      if (!_userLocations.containsKey(key) ||
+          _userLocations.containsKey(key) &&
+              !_userLocations[key].containsKey('color')) {
+        color =
+            _randomColor.randomColor(colorBrightness: ColorBrightness.light);
+        value['color'] = color;
+      } else {
+        value['color'] = _userLocations[key]['color'];
+      }
     }
-
-    value['color'] = color;
 
     setState(() {
       _userLocations[key] = value;
@@ -133,8 +139,10 @@ class HomeScreenState extends State<HomeScreen> {
         ),
         body: Column(
           children: <Widget>[
-            Expanded(child: MapView(data: _userLocations)),
-            FriendList(data: _userLocations),
+            Expanded(
+                child: MapView(
+                    data: _userLocations, mapController: mapController)),
+            FriendList(data: _userLocations, mapController: mapController),
             CurrentUser()
           ],
         ));
