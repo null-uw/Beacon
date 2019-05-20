@@ -25,8 +25,7 @@ class FriendList extends StatelessWidget {
 
     active.addAll(inactive);
 
-    return new Expanded(
-        child: new ListView.separated(
+    return new ListView.separated(
       separatorBuilder: (context, index) => Divider(),
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
@@ -38,7 +37,7 @@ class FriendList extends StatelessWidget {
             ? SingleFriendRowActive(user: user, mapController: mapController)
             : SingleFriendRowInActive(user: user);
       },
-    ));
+    );
   }
 }
 

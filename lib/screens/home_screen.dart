@@ -142,7 +142,9 @@ class HomeScreenState extends State<HomeScreen> {
             Expanded(
                 child: MapView(
                     data: _userLocations, mapController: mapController)),
-            FriendList(data: _userLocations, mapController: mapController),
+            Expanded(
+                child: FriendList(
+                    data: _userLocations, mapController: mapController)),
             CurrentUser()
           ],
         ));
