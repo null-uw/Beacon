@@ -1,13 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'dart:async';
-import 'dart:math';
 import 'package:random_color/random_color.dart';
+
 import './../utilities/firebase-connector.dart';
-import 'friend_preferences.dart';
-import '../widgets/map-view.dart';
-import '../widgets/friend-list.dart';
 import '../widgets/current-user.dart';
+import '../widgets/friend-list.dart';
+import '../widgets/map-view.dart';
+import 'friend_preferences.dart';
 
 // The Home screen is the first screen that the user will see after logging in.
 // This screen has four view components and one connector component. The
@@ -25,7 +26,6 @@ class HomeScreenState extends State<HomeScreen> {
   StreamSubscription _subscriptionFriends;
   Map<String, StreamSubscription> _locationSubscriptions;
   Map<String, dynamic> _userLocations;
-  Random random = new Random();
   RandomColor _randomColor = RandomColor();
 
   @override
