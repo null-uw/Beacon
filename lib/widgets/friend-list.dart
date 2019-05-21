@@ -9,29 +9,25 @@ class FriendList extends StatelessWidget {
 
   @override
   Widget build(BuildContext ctx) {
-    List inactive = [];
-    List active = [];
+    List users = data.values.toList();
 
-    for (var user in data.values) {
-      if (user.containsKey('location')) {
-        active.add(user);
+    users.sort((a, b) {
+      if (a["location"] != null && b["location"] == null) {
+        return -1;
+      } else if (a["location"] == null && b["location"] != null) {
+        return 1;
       } else {
-        inactive.add(user);
+        return a["name"].compareTo(b["name"]);
       }
-    }
-
-    active.sort((a, b) => a['name'].compareTo(b['name']));
-    inactive.sort((a, b) => a['name'].compareTo(b['name']));
-
-    active.addAll(inactive);
+    });
 
     return new ListView.separated(
       separatorBuilder: (context, index) => Divider(),
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: active.length,
+      itemCount: users.length,
       itemBuilder: (context, i) {
-        var user = active[i];
+        var user = users[i];
 
         return user.containsKey('location')
             ? SingleFriendRowActive(user: user, mapController: mapController)
