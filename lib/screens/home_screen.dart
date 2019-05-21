@@ -1,10 +1,14 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:random_color/random_color.dart';
+
 import './../utilities/firebase-connector.dart';
-import 'friend_preferences.dart';
-import '../widgets/map-view.dart';
-import '../widgets/friend-list.dart';
 import '../widgets/current-user.dart';
+import '../widgets/friend-list.dart';
+import '../widgets/map-view.dart';
+import 'friend_preferences.dart';
 
 // The Home screen is the first screen that the user will see after logging in.
 // This screen has four view components and one connector component. The
@@ -18,14 +22,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+  MapController mapController;
   StreamSubscription _subscriptionFriends;
   Map<String, StreamSubscription> _locationSubscriptions;
   Map<String, dynamic> _userLocations;
+  RandomColor _randomColor = RandomColor();
 
   @override
   void initState() {
     _locationSubscriptions = new Map();
     _userLocations = new Map();
+    mapController = new MapController();
 
     FirebaseConnector.getUserFriendStream(_onChange)
         .then((StreamSubscription s) => _subscriptionFriends = s);
@@ -50,8 +57,22 @@ class HomeScreenState extends State<HomeScreen> {
   // Handles changes to a user's location node in Firebase Database.
   // Updates state variable _userLocations with new value returned from Stream.
   _onLocationChange(String key, Map value) {
-    _userLocations[key] = value;
-    print(_userLocations);
+    Color color;
+    if (value.containsKey('location')) {
+      if (!_userLocations.containsKey(key) ||
+          _userLocations.containsKey(key) &&
+              !_userLocations[key].containsKey('color')) {
+        color =
+            _randomColor.randomColor(colorBrightness: ColorBrightness.light);
+        value['color'] = color;
+      } else {
+        value['color'] = _userLocations[key]['color'];
+      }
+    }
+
+    setState(() {
+      _userLocations[key] = value;
+    });
   }
 
   // Destroys all streams when Widget is unmounted.
@@ -118,12 +139,14 @@ class HomeScreenState extends State<HomeScreen> {
         ),
         body: Column(
           children: <Widget>[
-            Expanded(child: MapView()),
-            Expanded(child: FriendList()),
+            Expanded(
+                child: MapView(
+                    data: _userLocations, mapController: mapController)),
+            Expanded(
+                child: FriendList(
+                    data: _userLocations, mapController: mapController)),
             CurrentUser()
           ],
         ));
   }
 }
-
-
