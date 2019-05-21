@@ -1,3 +1,4 @@
+    
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.my_app">
 
@@ -10,9 +11,6 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="my_app"
         android:icon="@mipmap/ic_launcher">
-        <meta-data 
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC5uJItXJs_1SUrZ973A3sUFgoVG2bHgCs"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -34,4 +32,3 @@
         </activity>
     </application>
 </manifest>
-
