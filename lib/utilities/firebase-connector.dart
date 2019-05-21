@@ -18,7 +18,6 @@ class FirebaseConnector {
         .child("friends")
         .onValue
         .listen((Event event) {
-          print("friendStream");
       onData(event.snapshot.value);
     });
   
@@ -34,7 +33,6 @@ class FirebaseConnector {
         .child(userKey)
         .onValue
         .listen((Event event) {
-          print(userKey + " : locationStream");
       onData(userKey, event.snapshot.value);
     });
     return subscription;
