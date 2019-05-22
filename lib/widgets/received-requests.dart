@@ -3,12 +3,8 @@ import 'package:flutter/material.dart';
 // ReceivedRequest is a widget that renders a ListView of all received request within a Request widget
 class RecievedRequests extends StatelessWidget {
   //Dummy Data
-  final requestList = [
-    Request("Charlye", "charlye@gmail.com"),
-    Request("Ben", "Ben@gmail.com"),
-    Request("Joe", "Joe@gmail.com"),
-    Request("Mat", "Mat@gmail.com"),
-  ];
+  final List data;
+  RecievedRequests({this.data});
 
   @override
   Widget build(BuildContext ctx) {
@@ -25,9 +21,9 @@ class RecievedRequests extends StatelessWidget {
               child: new ListView.builder(
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                itemCount: this.requestList.length,
+                itemCount: this.data.length,
                 itemBuilder: (context, i) {
-                  var request = this.requestList[i];
+                  var request = this.data[i];
                   return new SingleRequest(request);
                 },
               ),
