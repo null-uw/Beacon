@@ -5,6 +5,7 @@ import 'friend_preferences.dart';
 import '../widgets/map-view.dart';
 import '../widgets/friend-list.dart';
 import '../widgets/current-user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // The Home screen is the first screen that the user will see after logging in.
 // This screen has four view components and one connector component. The
@@ -70,6 +71,14 @@ class HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  void signOut(BuildContext ctx) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacementNamed(ctx, '/sign-in');
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    print(user);
+    print("Signed out!");
+  }
+
   @override
   Widget build(BuildContext ctx) {
     _showLogout() {
@@ -88,7 +97,7 @@ class HomeScreenState extends State<HomeScreen> {
                 new FlatButton(
                   child: new Text("Sign Out"),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(ctx, '/sign-in');
+                    signOut(ctx);
                   },
                 )
               ],

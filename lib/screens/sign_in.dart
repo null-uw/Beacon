@@ -18,10 +18,10 @@ class _SignInPageState extends State<SignIn> {
   String _email;
   String _password;
   String _name;
+  bool _combo = true;
   FormType _formType = FormType.login;
 
   bool validateAndSave() {
-    print("test");
     final form = formKey.currentState;
     if(form.validate()) {
       form.save();
@@ -33,14 +33,26 @@ class _SignInPageState extends State<SignIn> {
     }
   }
 
-  void validateAndSubmit() async {
+  void validateAndSubmit(BuildContext ctx) async {
     if(validateAndSave()) {
       try {
-        if(_formType == FormType.login) {
-          FirebaseUser user = await FirebaseAuth.instance.signInWithEmailAndPassword(email:_email, password:_password);
-        } else {
+        if(_formType == FormType.register) {
           FirebaseUser user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email:_email, password:_password);
+        }
+        try {
+          FirebaseUser user = await FirebaseAuth.instance.signInWithEmailAndPassword(email:_email, password:_password);
+          print("Signed In!");
           print(user.uid + ": $_name");
+          Navigator.pushReplacementNamed(
+            ctx,
+            '/'
+          );
+        }
+        catch(e) {
+          print(e);
+          setState(() {
+            _combo = false;     
+          });
         }
       }
       catch(e) {
@@ -53,6 +65,7 @@ class _SignInPageState extends State<SignIn> {
 
   void moveToRegister() {
     setState(() {
+      _combo = true;
       _formType = FormType.register;
     });
   }
@@ -61,6 +74,16 @@ class _SignInPageState extends State<SignIn> {
     setState(() {
       _formType = FormType.login;
     });
+  }
+
+  String checkVal(String val) {
+    if(val.isEmpty) {
+      return "Cannot be empty";
+    } else if (!_combo) {
+      return "Improper combination";
+    } else {
+      return null;
+    }
   }
   
   @override
@@ -120,19 +143,29 @@ class _SignInPageState extends State<SignIn> {
   }
 
   List<Widget> buildSubmitButton(BuildContext ctx) {
-    if(_formType == FormType.login) {
+    if(!_combo) {
+      return[
+        new Text(
+          "Invalid combination", style:TextStyle(fontSize:20, fontStyle: FontStyle.italic, color: Colors.red),
+        ),
+        new RaisedButton(
+          child: new Text('Sign In', style:TextStyle(fontSize: 20)),
+          onPressed: () {
+            validateAndSubmit(ctx);
+          },
+        ),
+        new FlatButton(
+          child:new Text('Create Account', style:TextStyle(fontSize:20)),
+          onPressed: moveToRegister
+        )
+      ];
+    } else if(_formType == FormType.login) {
       return[
         new RaisedButton(
           child: new Text('Sign In', style:TextStyle(fontSize: 20)),
           onPressed: () {
-            validateAndSubmit();
-            Navigator.push(
-              ctx,
-              new MaterialPageRoute(
-                  builder: (ctx) => new HomeScreen()
-              )
-            );
-          }
+            validateAndSubmit(ctx);
+          },
         ),
         new FlatButton(
           child:new Text('Create Account', style:TextStyle(fontSize:20)),
@@ -143,7 +176,9 @@ class _SignInPageState extends State<SignIn> {
       return[
         new RaisedButton(
           child: new Text('Register', style:TextStyle(fontSize: 20)),
-          onPressed: validateAndSubmit,
+          onPressed: () {
+            validateAndSubmit(ctx);
+          }
         ),
         new FlatButton(
           child:new Text('Already have an account? Sign in', style:TextStyle(fontSize:20)),
