@@ -22,7 +22,6 @@ class HomeScreenState extends State<HomeScreen> {
   StreamSubscription _subscriptionFriends;
   Map<String, StreamSubscription> _locationSubscriptions;
   Map<String, dynamic> _userLocations;
-
   @override
   void initState() {
     _locationSubscriptions = new Map();
