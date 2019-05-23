@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import './home_screen.dart';
 
 // The sign in component will show up if the user has clicked the sign in button from the signup screen.
 // The goal of the screen is to get the user to log in with their already created email and password.
@@ -8,10 +7,8 @@ class SignIn extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new _SignInPageState();
 }
-enum FormType {
-  login,
-  register
-}
+
+enum FormType { login, register }
 
 class _SignInPageState extends State<SignIn> {
   final formKey = GlobalKey<FormState>();
@@ -23,10 +20,8 @@ class _SignInPageState extends State<SignIn> {
 
   bool validateAndSave() {
     final form = formKey.currentState;
-    if(form.validate()) {
+    if (form.validate()) {
       form.save();
-      print("email: $_email");
-      print("password: $_password");
       return true;
     } else {
       return false;
@@ -34,33 +29,27 @@ class _SignInPageState extends State<SignIn> {
   }
 
   void validateAndSubmit(BuildContext ctx) async {
-    if(validateAndSave()) {
+    if (validateAndSave()) {
       try {
-        if(_formType == FormType.register) {
-          FirebaseUser user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email:_email, password:_password);
+        if (_formType == FormType.register) {
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+              email: _email, password: _password);
+
+          //TODO: create user node with the given name
         }
         try {
-          FirebaseUser user = await FirebaseAuth.instance.signInWithEmailAndPassword(email:_email, password:_password);
-          print("Signed In!");
-          print(user.uid + ": $_name");
-          Navigator.pushReplacementNamed(
-            ctx,
-            '/'
-          );
-        }
-        catch(e) {
-          print(e);
+          await FirebaseAuth.instance
+              .signInWithEmailAndPassword(email: _email, password: _password);
+          Navigator.pushReplacementNamed(ctx, '/');
+        } catch (e) {
           setState(() {
-            _combo = false;     
+            _combo = false;
           });
         }
-      }
-      catch(e) {
+      } catch (e) {
         print(e);
       }
-    } else {
-
-    }
+    } else {}
   }
 
   void moveToRegister() {
@@ -77,7 +66,7 @@ class _SignInPageState extends State<SignIn> {
   }
 
   String checkVal(String val) {
-    if(val.isEmpty) {
+    if (val.isEmpty) {
       return "Cannot be empty";
     } else if (!_combo) {
       return "Improper combination";
@@ -85,105 +74,95 @@ class _SignInPageState extends State<SignIn> {
       return null;
     }
   }
-  
+
   @override
   Widget build(BuildContext ctx) {
-
     return Scaffold(
-      appBar: new AppBar(
-        title:new Text("Beacon")
-      ),
-      body:new Container(
-        padding:new EdgeInsets.all(16.0),
-        child:new Form(
-          key:formKey,
-          child:new Column(
-            children: buildInput() + buildSubmitButton(ctx)
-          ),
-        )
-      )
-    );
+        appBar: new AppBar(title: new Text("Beacon")),
+        body: new Container(
+            padding: new EdgeInsets.all(16.0),
+            child: new Form(
+              key: formKey,
+              child:
+                  new Column(children: buildInput() + buildSubmitButton(ctx)),
+            )));
   }
 
   List<Widget> buildInput() {
-    if(_formType == FormType.login) {
-      return[
+    if (_formType == FormType.login) {
+      return [
         new TextFormField(
-          decoration: new InputDecoration(labelText:"Email"),
+          decoration: new InputDecoration(labelText: "Email"),
           validator: (val) => val.isEmpty ? 'Email cannot be empty' : null,
           onSaved: (val) => _email = val,
         ),
         new TextFormField(
-          decoration: new InputDecoration(labelText:"Password"),
-          obscureText: true,
-          validator: (val) => val.isEmpty ? 'Password cannot be empty' : null,
-          onSaved: (val) => _password = val
-        )
+            decoration: new InputDecoration(labelText: "Password"),
+            obscureText: true,
+            validator: (val) => val.isEmpty ? 'Password cannot be empty' : null,
+            onSaved: (val) => _password = val)
       ];
     } else {
-      return[
+      return [
         TextFormField(
-          decoration: InputDecoration(labelText: "Name"),
-          validator: (val) => val.isEmpty ? 'Name cannot be empty' : null,
-          onSaved: (val) => _name = val
-        ),
+            decoration: InputDecoration(labelText: "Name"),
+            validator: (val) => val.isEmpty ? 'Name cannot be empty' : null,
+            onSaved: (val) => _name = val),
         TextFormField(
-          decoration: InputDecoration(labelText:"Email"),
+          decoration: InputDecoration(labelText: "Email"),
           validator: (val) => val.isEmpty ? 'Email cannot be empty' : null,
           onSaved: (val) => _email = val,
         ),
         TextFormField(
-          decoration: InputDecoration(labelText:"Password"),
-          obscureText: true,
-          validator: (val) => val.isEmpty ? 'Password cannot be empty' : null,
-          onSaved: (val) => _password = val
-        )
+            decoration: InputDecoration(labelText: "Password"),
+            obscureText: true,
+            validator: (val) => val.isEmpty ? 'Password cannot be empty' : null,
+            onSaved: (val) => _password = val)
       ];
     }
   }
 
   List<Widget> buildSubmitButton(BuildContext ctx) {
-    if(!_combo) {
-      return[
+    if (!_combo) {
+      return [
         new Text(
-          "Invalid combination", style:TextStyle(fontSize:20, fontStyle: FontStyle.italic, color: Colors.red),
+          "Invalid combination",
+          style: TextStyle(
+              fontSize: 20, fontStyle: FontStyle.italic, color: Colors.red),
         ),
         new RaisedButton(
-          child: new Text('Sign In', style:TextStyle(fontSize: 20)),
+          child: new Text('Sign In', style: TextStyle(fontSize: 20)),
           onPressed: () {
             validateAndSubmit(ctx);
           },
         ),
         new FlatButton(
-          child:new Text('Create Account', style:TextStyle(fontSize:20)),
-          onPressed: moveToRegister
-        )
+            child: new Text('Create Account', style: TextStyle(fontSize: 20)),
+            onPressed: moveToRegister)
       ];
-    } else if(_formType == FormType.login) {
-      return[
+    } else if (_formType == FormType.login) {
+      return [
         new RaisedButton(
-          child: new Text('Sign In', style:TextStyle(fontSize: 20)),
+          child: new Text('Sign In', style: TextStyle(fontSize: 20)),
           onPressed: () {
             validateAndSubmit(ctx);
           },
         ),
         new FlatButton(
-          child:new Text('Create Account', style:TextStyle(fontSize:20)),
-          onPressed: moveToRegister
-        )
+            child: new Text('Create Account', style: TextStyle(fontSize: 20)),
+            onPressed: moveToRegister)
       ];
     } else {
-      return[
+      return [
         new RaisedButton(
-          child: new Text('Register', style:TextStyle(fontSize: 20)),
-          onPressed: () {
-            validateAndSubmit(ctx);
-          }
-        ),
+            child: new Text('Register', style: TextStyle(fontSize: 20)),
+            onPressed: () {
+              validateAndSubmit(ctx);
+            }),
         new FlatButton(
-          child:new Text('Already have an account? Sign in', style:TextStyle(fontSize:20)),
-          onPressed: moveToLogin
-        )
+            child: new Text('Already have an account? Sign in',
+                style: TextStyle(fontSize: 20)),
+            onPressed: moveToLogin)
       ];
     }
   }
