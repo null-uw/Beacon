@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 
 // ReceivedRequest is a widget that renders a ListView of all received request within a Request widget
 class RecievedRequests extends StatelessWidget {
-
   final Map<dynamic, dynamic> data;
   RecievedRequests({this.data});
 
   @override
   Widget build(BuildContext ctx) {
-     List requestList = data.values.toList();
+    List requestList = data.values.toList();
     return new Expanded(
       child: new Container(
         padding: new EdgeInsets.all(16.0),
@@ -19,7 +18,8 @@ class RecievedRequests extends StatelessWidget {
                 style:
                     new TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
             new Expanded(
-              child: new ListView.builder(
+              child: new ListView.separated(
+                separatorBuilder: (context, index) => Divider(),
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 itemCount: requestList.length,
@@ -43,43 +43,34 @@ class SingleRequest extends StatelessWidget {
 
   @override
   Widget build(BuildContext ctx) {
+    return new ListTile(
+      title: Text(request['name']),
+      subtitle: Text(request['email']),
+      trailing: IconRow(),
+    );
+  }
+}
+
+//IconRow is a widget that renders the accept button and deny button for each request widget. 
+class IconRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext ctx) {
     return new Container(
-      padding: new EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        children: <Widget>[
-          new Row(
-            children: <Widget>[
-              new Expanded(
-                  child: new Container(
-                child: new Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    new Text(request["name"],
-                        style: new TextStyle(
-                            fontSize: 16.0, fontWeight: FontWeight.bold)),
-                    new Text(request["email"])
-                  ],
-                ),
-              )),
-              new Row(
-                children: <Widget>[
-                  IconButton(
-                      icon: Icon(Icons.check),
-                      onPressed: () {
-                        print("Accepted Request!");
-                      }),
-                  IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        print("Denied Request!");
-                      })
-                ],
-              )
-            ],
-          ),
-          new Divider()
-        ],
-      ),
+      child : Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        IconButton(
+            icon: Icon(Icons.check),
+            onPressed: () {
+              print("Accepted Request!");
+            }),
+        IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () {
+              print("Denied Request!");
+            })
+      ],
+    )
     );
   }
 }
