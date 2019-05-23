@@ -19,17 +19,11 @@ class FriendPreferences extends StatefulWidget {
 class FriendPreferenceState extends State<FriendPreferences> {
   StreamSubscription requestSubscription;
   Map<dynamic, dynamic> requestList;
-    var dummyData = [
-    Request("Charlye", "charlye@gmail.com"),
-    Request("Ben", "Ben@gmail.com"),
-    Request("Joe", "Joe@gmail.com"),
-    Request("Mat", "Mat@gmail.com"),
-  ];
 
     @override
   void initState() {
 
-    FirebaseConnector.getUserFriendStream( _onChange)
+    FirebaseConnector.getUserRequestStream( _onChange)
         .then((StreamSubscription s) => requestSubscription = s);
 
     super.initState();
@@ -38,6 +32,7 @@ class FriendPreferenceState extends State<FriendPreferences> {
   _onChange(Map value) {
     setState(() {
       requestList = value;
+      print("REQUESTS");
       print(requestList);
     });
   }
@@ -45,13 +40,18 @@ class FriendPreferenceState extends State<FriendPreferences> {
 
   @override
   Widget build(BuildContext ctx) {
+    print("Request");
+    print(requestList);
+    List data = requestList.values.toList();
+    print("list");
+    print(data);
     return new Scaffold(
         appBar: new AppBar(
           title: new Text("Friend Preferences"),
         ),
         body: new Container(
           child: Column(
-            children: <Widget>[SearchFriends(), RecievedRequests(data: dummyData)]
+            children: <Widget>[SearchFriends(), RecievedRequests(data: requestList)]
           ),
         ));
   }

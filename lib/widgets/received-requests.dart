@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 
 // ReceivedRequest is a widget that renders a ListView of all received request within a Request widget
 class RecievedRequests extends StatelessWidget {
-  //Dummy Data
-  final List data;
+
+  final Map<dynamic, dynamic> data;
   RecievedRequests({this.data});
 
   @override
   Widget build(BuildContext ctx) {
+     List requestList = data.values.toList();
     return new Expanded(
       child: new Container(
         padding: new EdgeInsets.all(16.0),
@@ -21,9 +22,9 @@ class RecievedRequests extends StatelessWidget {
               child: new ListView.builder(
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                itemCount: this.data.length,
+                itemCount: requestList.length,
                 itemBuilder: (context, i) {
-                  var request = this.data[i];
+                  var request = requestList[i];
                   return new SingleRequest(request);
                 },
               ),
@@ -53,10 +54,10 @@ class SingleRequest extends StatelessWidget {
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    new Text(request.getName(),
+                    new Text(request["name"],
                         style: new TextStyle(
                             fontSize: 16.0, fontWeight: FontWeight.bold)),
-                    new Text(request.getEmail())
+                    new Text(request["email"])
                   ],
                 ),
               )),
@@ -80,27 +81,5 @@ class SingleRequest extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-// Temporary Request Object that contains a users name & email
-class Request {
-  String name;
-  String email;
-
-// Request Constructor
-  Request(String name, String email) {
-    this.name = name;
-    this.email = email;
-  }
-
-// Returns users name
-  String getName() {
-    return this.name;
-  }
-
-// Returns users email
-  String getEmail() {
-    return this.email;
   }
 }
