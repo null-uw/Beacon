@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import '../utilities/device-location.dart';
@@ -59,8 +58,9 @@ class _CurrentUserState extends State<CurrentUser> {
                       });
                     });
                   } else {
+                    // when toggled off
+                    deviceLocation.cancelLocationSubscription();
                     setState(() {
-                      deviceLocation.cancelLocationSubscription();
                       currentLocation = null;
                     });
                   }

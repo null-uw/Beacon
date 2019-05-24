@@ -66,8 +66,8 @@ Our project aims to implement a new type of on-demand location sharing to help c
 7. The application must hide user text input into the Password field, by hiding the characters with asterisks.
 8. The application must trigger a call to the authentication service when the user presses the ‘Sign In’ button and check if the inputted credentials match a registered user.
 9. The application must display any errors in red above the ‘Sign In’ button that are returned from the authentication service after a failed authentication service call.
-10. After a successful authentication service call, the application must redirect to the ‘User Home’ Screen within two seconds.
-11. The application must change to the ‘Sign Up’ screen within two seconds, if the user clicks the ‘Sign Up’ link.
+10. After a successful authentication service call, the application must redirect to the ‘User Home’ Screen within 5 seconds.
+11. The application must change to the ‘Sign Up’ screen within 5 seconds, if the user clicks the ‘Sign Up’ link.
 
 ### Landing Screen: Sign Up
 
@@ -85,12 +85,11 @@ Our project aims to implement a new type of on-demand location sharing to help c
 7. Password field must have a placeholder that says “Password.”
 8. The application must hide user text input into the Password field, by hiding the characters with asterisks.
 9. The application must only accept passwords that are at least eight characters long, contains at least one number, and at least one uppercase and lowercase letter.
-10. The application must explain password requirements to the user below the password field.
-11. The application must not register the user if one of the fields are empty or contain invalid input, as mentioned above.
-12. The application must trigger a call to the authentication service using the credentials entered by the user in the ‘Name’, ‘Email’, and ‘Password’ fields when the user presses the ‘Sign Up’ button. If successful, the credentials will be added to the database.
-13. The application must display any errors in red above the ‘Sign Up’ button that are returned from the authentication service after a failed authentication service call.
-14. After a successful authentication service call, the application must redirect to the ‘User Home’ Screen within two seconds.
-15. The application must change to the ‘Sign in’ screen within two seconds after the user clicks the ‘Sign In’ link.
+10. The application must not register the user if one of the fields are empty or contain invalid input, as mentioned above.
+11. The application must trigger a call to the authentication service using the credentials entered by the user in the ‘Name’, ‘Email’, and ‘Password’ fields when the user presses the ‘Sign Up’ button. If successful, the credentials will be added to the database.
+12. The application must display any errors in red above the ‘Sign Up’ button that are returned from the authentication service after a failed authentication service call.
+13. After a successful authentication service call, the application must redirect to the ‘User Home’ Screen within two seconds.
+14. The application must change to the ‘Sign in’ screen within two seconds after the user clicks the ‘Sign In’ link.
 
 
 
@@ -104,14 +103,10 @@ Our project aims to implement a new type of on-demand location sharing to help c
 #### Signout Behavior Requirements
 
 1. On application launch, the application must show the ‘User Home’ screen if there is an existing authentication session.
-2. On application launch, the application must redirect to the ‘Landing’ screen if there is not an existing authentication session.
-
-
-#### Signout Behavior Requirements
-
-1. When the user clicks the top left ‘Sign out’ icon, the application must display a modal within one second with two options (‘Sign out’ or ‘Cancel’) to confirm the user’s action.
-2. When the user clicks the ‘Sign out’ button on the modal, the application must unauthenticate the current user and redirect to the ‘Landing’ Screen within two seconds.
-3. When the user clicks the ‘Cancel’ button on the popup, the application must close the modal and re-display the ‘User Home’ screen.
+2. On application launch, the application must show the ‘Landing’ screen if there is not an existing authentication session.
+3. When the user clicks the top left ‘Sign out’ icon, the application must display a modal within one second with two options (‘Sign out’ or ‘Cancel’) to confirm the user’s action.
+4. When the user clicks the ‘Sign out’ button on the modal, the application must unauthenticate the current user and redirect to the ‘Landing’ Screen within two seconds.
+5. When the user clicks the ‘Cancel’ button on the popup, the application must close the modal and re-display the ‘User Home’ screen.
 
 
 #### Map Behavior
@@ -124,11 +119,10 @@ Our project aims to implement a new type of on-demand location sharing to help c
 6. The application must display users who have their beacon ‘ON’ above users who have their beacon ‘OFF’ in the user list.
 7. The application must capture the current user’s location and share to all of the user’s followers if they toggle the beacon form ‘inactive’ to ‘active’
 8. The application must not display the current user’s location to any of their followers if the current user toggles their beacon from ‘active’ to ‘inactive’.
-9. The user’s current location must not be sent to any data storage solutions when the Beacon toggle is off.
+9. The user’s current location must not be sent to any external data storage solutions when the Beacon toggle is off.
 10. The user’s current location must be shared with the user’s friends when the Beacon toggle is on.
-When the Home screen is loaded, the application must call the database and load all of the current user ‘active’ friend’s locations. 
-11. The software must redirect the screen to the ‘Friend Preference’ screen if the ‘Friend Preference’ icon is clicked.
-
+11. When the Home screen is loaded, the application must call the database and load all of the current user ‘active’ friend’s locations. 
+12. The software must redirect the screen to the ‘Friend Preference’ screen if the ‘Friend Preference’ icon is clicked.
 
 
 
@@ -155,8 +149,3 @@ When the Home screen is loaded, the application must call the database and load 
 12. A button must also be displayed next to the email and name that says “Add friend” to enable the user to send an invite to the user they searched.
 13. The application must display a toast confirmation that the invite was sent, within one second.
 14. The user must be able to return to the home screen within one second, using a back button at the top left corner.
-
-
-
-
-
