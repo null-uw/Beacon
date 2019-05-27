@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 // ReceivedRequest is a widget that renders a ListView of all received request within a Request widget
 class RecievedRequests extends StatelessWidget {
   final Map<dynamic, dynamic> data;
+  List requestListkeys = [];
+  List requestListValues = [];
   RecievedRequests({this.data});
 
   @override
   Widget build(BuildContext ctx) {
-    List requestList = data.values.toList();
+    if (data != null) {
+      requestListkeys = data.keys.toList();
+      requestListValues = data.values.toList();
+    }
     return new Expanded(
       child: new Container(
         padding: new EdgeInsets.all(16.0),
@@ -22,9 +28,12 @@ class RecievedRequests extends StatelessWidget {
                 separatorBuilder: (context, index) => Divider(),
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                itemCount: requestList.length,
+                itemCount: requestListValues.length,
                 itemBuilder: (context, i) {
-                  var request = requestList[i];
+                  var request = requestListValues[i];
+                  request["id"] = requestListkeys[i];
+                  print("Individual");
+                  print(request);
                   return new SingleRequest(request);
                 },
               ),
@@ -46,31 +55,55 @@ class SingleRequest extends StatelessWidget {
     return new ListTile(
       title: Text(request['name']),
       subtitle: Text(request['email']),
-      trailing: IconRow(),
+      trailing: IconRow(request),
     );
   }
 }
 
-//IconRow is a widget that renders the accept button and deny button for each request widget. 
+//IconRow is a widget that renders the accept button and deny button for each request widget.
 class IconRow extends StatelessWidget {
+  final request;
+  IconRow(this.request);
+
   @override
   Widget build(BuildContext ctx) {
     return new Container(
-      child : Row(
+        child: Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         IconButton(
             icon: Icon(Icons.check),
             onPressed: () {
-              print("Accepted Request!");
+              print(request);
             }),
         IconButton(
             icon: Icon(Icons.close),
-            onPressed: () {
-              print("Denied Request!");
-            })
+            onPressed: () => {denyRequest(request["id"])})
       ],
-    )
-    );
+    ));
   }
 }
+
+denyRequest(userID) {
+  FirebaseDatabase.instance
+      .reference()
+      .child("users")
+      .child(
+          "uid") // hardcoded to grab uid in FB. Will be changed to currenUser.uid once auth is established
+      .child("requests")
+      .child(userID)
+      .remove();
+}
+
+acceptRequest(userID) {
+  FirebaseDatabase.instance
+      .reference()
+      .child("users")
+      .child(
+          "uid") // hardcoded to grab uid in FB. Will be changed to currenUser.uid once auth is established
+      .child("requests")
+      .child(userID)
+      .remove();
+}
+
+// https://stackoverflow.com/questions/46856559/flutter-listview-with-map-instead-of-list
