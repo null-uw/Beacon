@@ -73,20 +73,20 @@ class IconRow extends StatelessWidget {
       children: <Widget>[
         IconButton(
             icon: Icon(Icons.check),
-            onPressed: () {
-              print(request);
-            }),
+            onPressed: () => {acceptRequest(request)}),
         IconButton(
             icon: Icon(Icons.close),
-            onPressed: () => {denyRequest(request["id"])})
+            onPressed: () => {removeRequest(request["id"])})
       ],
     ));
   }
 }
 
-denyRequest(userID) {
-  FirebaseDatabase.instance
-      .reference()
+final databaseReference = FirebaseDatabase.instance.reference();
+
+//takes in a userID and removes the speceific request from the current users request object
+removeRequest(userID) {
+  databaseReference
       .child("users")
       .child(
           "uid") // hardcoded to grab uid in FB. Will be changed to currenUser.uid once auth is established
@@ -95,15 +95,36 @@ denyRequest(userID) {
       .remove();
 }
 
-acceptRequest(userID) {
-  FirebaseDatabase.instance
-      .reference()
+//Takes in a request object, establishes a friendship between both users and removes the request from the request list.
+acceptRequest(request) {
+
+  //appends the user object to current users friends object
+  databaseReference
       .child("users")
       .child(
           "uid") // hardcoded to grab uid in FB. Will be changed to currenUser.uid once auth is established
-      .child("requests")
-      .child(userID)
-      .remove();
-}
+      .child("friends")
+      .child(request["id"])
+      .set({
+        "name" : request["name"],
+        "email" : request["email"]
+      });
+  
 
-// https://stackoverflow.com/questions/46856559/flutter-listview-with-map-instead-of-list
+  //add current user object to other users friend object
+    //{
+    // databaseReference
+    //   .child("users")
+    //   .child(
+    //       request["id"]) // hardcoded to grab uid in FB. Will be changed to currenUser.uid once auth is established
+    //   .child("friends")
+    //   .set({
+    //   request["id"]: {
+    //     "name" : request["name"],
+    //     "email" : request["email"]
+    //   }});
+    //}
+
+  //removes the request from the firebase db
+      removeRequest(request["id"]);
+}
