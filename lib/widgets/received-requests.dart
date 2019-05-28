@@ -32,8 +32,6 @@ class RecievedRequests extends StatelessWidget {
                 itemBuilder: (context, i) {
                   var request = requestListValues[i];
                   request["id"] = requestListkeys[i];
-                  print("Individual");
-                  print(request);
                   return new SingleRequest(request);
                 },
               ),
