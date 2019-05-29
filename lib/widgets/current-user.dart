@@ -9,6 +9,7 @@ class CurrentUser extends StatefulWidget {
 }
 
 class _CurrentUserState extends State<CurrentUser> {
+  final databaseReference = FirebaseDatabase.instance.reference();
   bool isSwitched = false;
 
   DeviceLocation deviceLocation = DeviceLocation();
@@ -78,24 +79,22 @@ class _CurrentUserState extends State<CurrentUser> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
         ));
   }
-}
 
-final databaseReference = FirebaseDatabase.instance.reference();
+  updateLocation(LocationData loc) {
+    //appends the user object to current users friends object
+    databaseReference
+        .child("locations")
+        .child("todo_current-user") // TODO: update with current user id
+        .child("location")
+        .set({"lat": loc.latitude, "lng": loc.longitude});
+  }
 
-updateLocation(LocationData loc) {
-  //appends the user object to current users friends object
-  databaseReference
-      .child("locations")
-      .child("todo_current-user") // TODO: update with current user id
-      .child("location")
-      .set({"lat": loc.latitude, "lng": loc.longitude});
-}
-
-removeLocation() {
-  //appends the user object to current users friends object
-  databaseReference
-      .child("locations")
-      .child("todo_current-user") // TODO: update with current user id
-      .child("location")
-      .remove();
+  removeLocation() {
+    //appends the user object to current users friends object
+    databaseReference
+        .child("locations")
+        .child("todo_current-user") // TODO: update with current user id
+        .child("location")
+        .remove();
+  }
 }
