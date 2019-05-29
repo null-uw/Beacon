@@ -53,13 +53,13 @@ class _CurrentUserState extends State<CurrentUser> {
                 onChanged: (value) {
                   if (value) {
                     // if toggled on
-                    deviceLocation
-                        .startLocationSubscription((LocationData location) {
+                    deviceLocation.startLocationSubscription(
+                        (LocationData location) {
                       setState(() {
                         currentLocation = location;
                       });
                       updateLocation(location);
-                    });
+                    }, 100);
                   } else {
                     // when toggled off
                     deviceLocation.cancelLocationSubscription();

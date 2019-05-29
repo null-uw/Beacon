@@ -5,7 +5,8 @@ class DeviceLocation {
   Location location = Location();
   StreamSubscription<LocationData> locationSubscription;
 
-  startLocationSubscription(Function onLocation) {
+  startLocationSubscription(Function onLocation, [double distanceFilter = 0]) {
+    location.changeSettings(distanceFilter: distanceFilter);
     location.getLocation();
 
     locationSubscription = location.onLocationChanged().listen(onLocation);
