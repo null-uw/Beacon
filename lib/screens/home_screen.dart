@@ -5,7 +5,7 @@ import 'friend_preferences.dart';
 import '../widgets/map-view.dart';
 import '../widgets/friend-list.dart';
 import '../widgets/current-user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../widgets/authentication.dart';
 
 // The Home screen is the first screen that the user will see after logging in.
 // This screen has four view components and one connector component. The
@@ -14,6 +14,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 // in a section below. There is also a connector component that shares data
 // between multiple components.
 class HomeScreen extends StatefulWidget {
+  HomeScreen({this.auth, this.onSignedOut});
+
+  final BaseAuth auth;
+  final VoidCallback onSignedOut;
+
   @override
   HomeScreenState createState() => new HomeScreenState();
 }
@@ -71,10 +76,8 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void signOut(BuildContext ctx) async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.pushReplacementNamed(ctx, '/sign-in');
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    print(user);
+    await widget.auth.signOut();
+    widget.onSignedOut();
     print("Signed out!");
   }
 
