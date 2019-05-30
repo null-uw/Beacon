@@ -1,25 +1,38 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 abstract class BaseAuth {
   Future<String> signIn(String email, String password);
-  Future<String> signUp(String email, String password);
+  Future<String> signUp(String email, String password, String name);
   Future<String> getCurrentUser();
   Future<void> signOut();
 }
 
 class Auth implements BaseAuth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final DatabaseReference _databaseReference =
+      FirebaseDatabase.instance.reference();
 
   //Signs in the user and returns the uid
   Future<String> signIn(String email, String password) async {
-    FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+    FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
     return user.uid;
   }
 
   //Signs up the user and returns uid
-  Future<String> signUp(String email, String password) async {
-    FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+  Future<String> signUp(String email, String password, String name) async {
+    FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email, password: password);
+    await _databaseReference
+        .child("locations")
+        .child(user.uid)
+        .update({"name": name, "email": email});
+    await _databaseReference
+        .child("index")
+        .child(user.uid)
+        .update({"name": name, "email": email});
     return user.uid;
   }
 
@@ -28,10 +41,9 @@ class Auth implements BaseAuth {
     try {
       FirebaseUser user = await _firebaseAuth.currentUser();
       return user.uid;
-    } catch(e) {
+    } catch (e) {
       return null;
     }
-    
   }
 
   //Signs user out and returns uid
