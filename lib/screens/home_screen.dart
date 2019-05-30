@@ -100,6 +100,7 @@ class HomeScreenState extends State<HomeScreen> {
                   child: new Text("Sign Out"),
                   onPressed: () {
                     signOut(ctx);
+                    Navigator.of(dialogCtx).pop();
                   },
                 )
               ],
@@ -136,5 +137,3 @@ class HomeScreenState extends State<HomeScreen> {
         ));
   }
 }
-
-
