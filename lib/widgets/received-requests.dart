@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // ReceivedRequest is a widget that renders a ListView of all received request within a Request widget
 class RecievedRequests extends StatelessWidget {
@@ -7,7 +9,13 @@ class RecievedRequests extends StatelessWidget {
 
   @override
   Widget build(BuildContext ctx) {
-    List requestList = data.values.toList();
+    List requestListValues = [];
+    List requestListkeys = [];
+
+    if (data != null) {
+      requestListkeys = data.keys.toList();
+      requestListValues = data.values.toList();
+    }
     return new Expanded(
       child: new Container(
         padding: new EdgeInsets.all(16.0),
@@ -22,9 +30,10 @@ class RecievedRequests extends StatelessWidget {
                 separatorBuilder: (context, index) => Divider(),
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                itemCount: requestList.length,
+                itemCount: requestListValues.length,
                 itemBuilder: (context, i) {
-                  var request = requestList[i];
+                  var request = requestListValues[i];
+                  request["id"] = requestListkeys[i];
                   return new SingleRequest(request);
                 },
               ),
@@ -46,31 +55,73 @@ class SingleRequest extends StatelessWidget {
     return new ListTile(
       title: Text(request['name']),
       subtitle: Text(request['email']),
-      trailing: IconRow(),
+      trailing: IconRow(request),
     );
   }
 }
 
-//IconRow is a widget that renders the accept button and deny button for each request widget. 
+//IconRow is a widget that renders the accept button and deny button for each request widget.
 class IconRow extends StatelessWidget {
+  final databaseReference = FirebaseDatabase.instance.reference();
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+  final request;
+  IconRow(this.request);
+
   @override
   Widget build(BuildContext ctx) {
     return new Container(
-      child : Row(
+        child: Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         IconButton(
-            icon: Icon(Icons.check),
-            onPressed: () {
-              print("Accepted Request!");
-            }),
+            icon: Icon(Icons.check), onPressed: () => {acceptRequest(request)}),
         IconButton(
             icon: Icon(Icons.close),
-            onPressed: () {
-              print("Denied Request!");
-            })
+            onPressed: () => {removeRequest(request["id"])})
       ],
-    )
-    );
+    ));
+  }
+
+  //takes in a userID and removes the speceific request from the current users request object
+  removeRequest(userID) async {
+    FirebaseUser currentUser = await firebaseAuth.currentUser();
+
+    databaseReference
+        .child("users")
+        .child(currentUser.uid)
+        .child("requests")
+        .child(userID)
+        .remove();
+  }
+
+  //Takes in a request object, establishes a friendship between both users and removes the request from the request list.
+  acceptRequest(request) async {
+    FirebaseUser currentUser = await firebaseAuth.currentUser();
+
+    //appends the user object to current users friends object
+    databaseReference
+        .child("users")
+        .child(currentUser.uid)
+        .child("friends")
+        .child(request["id"])
+        .set({"name": request["name"], "email": request["email"]});
+
+    //add current user object to other users friend object
+    //{
+    // databaseReference
+    //   .child("users")
+    //   .child(
+    //       request["id"]) // hardcoded to grab uid in FB. Will be changed to currenUser.uid once auth is established
+    //   .child("friends")
+    //   .set({
+    //   request["id"]: {
+    //     "name" : request["name"],
+    //     "email" : request["email"]
+    //   }});
+    //}
+
+    //removes the request from the firebase db
+    removeRequest(request["id"]);
   }
 }
