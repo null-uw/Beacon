@@ -6,6 +6,7 @@ import 'package:random_color/random_color.dart';
 
 import './../utilities/firebase-connector.dart';
 import '../widgets/current-user.dart';
+import '../widgets/authentication.dart';
 import '../widgets/friend-list.dart';
 import '../widgets/map-view.dart';
 import 'friend_preferences.dart';
@@ -17,6 +18,11 @@ import 'friend_preferences.dart';
 // in a section below. There is also a connector component that shares data
 // between multiple components.
 class HomeScreen extends StatefulWidget {
+  HomeScreen({this.auth, this.onSignedOut});
+
+  final BaseAuth auth;
+  final VoidCallback onSignedOut;
+
   @override
   HomeScreenState createState() => new HomeScreenState();
 }
@@ -44,35 +50,39 @@ class HomeScreenState extends State<HomeScreen> {
   // Inner method 'iterateMapEntry' loops through returned snapshot,
   // instantiating new StreamSubscriptions if not found in state map.
   _onChange(Map value) {
-    void iterateMapEntry(key, value) {
-      if (!_locationSubscriptions.containsKey(key)) {
-        FirebaseConnector.getUserLocationStream(key, _onLocationChange)
-            .then((StreamSubscription s) => _locationSubscriptions[key] = s);
+    if (value != null) {
+      void iterateMapEntry(key, value) {
+        if (!_locationSubscriptions.containsKey(key)) {
+          FirebaseConnector.getUserLocationStream(key, _onLocationChange)
+              .then((StreamSubscription s) => _locationSubscriptions[key] = s);
+        }
       }
-    }
 
-    value.forEach(iterateMapEntry);
+      value.forEach(iterateMapEntry);
+    }
   }
 
   // Handles changes to a user's location node in Firebase Database.
   // Updates state variable _userLocations with new value returned from Stream.
   _onLocationChange(String key, Map value) {
     Color color;
-    if (value.containsKey('location')) {
-      if (!_userLocations.containsKey(key) ||
-          _userLocations.containsKey(key) &&
-              !_userLocations[key].containsKey('color')) {
-        color =
-            _randomColor.randomColor(colorBrightness: ColorBrightness.light);
-        value['color'] = color;
-      } else {
-        value['color'] = _userLocations[key]['color'];
+    if (value != null) {
+      if (value.containsKey('location')) {
+        if (!_userLocations.containsKey(key) ||
+            _userLocations.containsKey(key) &&
+                !_userLocations[key].containsKey('color')) {
+          color =
+              _randomColor.randomColor(colorBrightness: ColorBrightness.light);
+          value['color'] = color;
+        } else {
+          value['color'] = _userLocations[key]['color'];
+        }
       }
-    }
 
-    setState(() {
-      _userLocations[key] = value;
-    });
+      setState(() {
+        _userLocations[key] = value;
+      });
+    }
   }
 
   // Destroys all streams when Widget is unmounted.
@@ -89,6 +99,12 @@ class HomeScreenState extends State<HomeScreen> {
     }
 
     super.dispose();
+  }
+
+  void signOut(BuildContext ctx) async {
+    await widget.auth.signOut();
+    widget.onSignedOut();
+    print("Signed out!");
   }
 
   @override
@@ -109,7 +125,8 @@ class HomeScreenState extends State<HomeScreen> {
                 new FlatButton(
                   child: new Text("Sign Out"),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(ctx, '/sign-in');
+                    signOut(ctx);
+                    Navigator.of(dialogCtx).pop();
                   },
                 )
               ],

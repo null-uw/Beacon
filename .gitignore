@@ -26,9 +26,7 @@
 .pub-cache/
 .pub/
 /build/
-.mapbox_secret.json
-
-
+mapbox_secret.json
 
 # Android related
 **/android/**/gradle-wrapper.jar
@@ -36,6 +34,7 @@
 **/android/captures/
 **/android/gradlew
 **/android/gradlew.bat
+**/android/app/local.properties
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
 

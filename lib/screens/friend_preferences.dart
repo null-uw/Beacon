@@ -43,7 +43,7 @@ class FriendPreferenceState extends State<FriendPreferences> {
         ),
         body: new Container(
           child: Column(
-            children: <Widget>[SearchFriends(), RecievedRequests(data: requestList)]
+            children: <Widget>[SearchFriends(), RecievedRequests(data: requestList) ]
           ),
         ));
   }

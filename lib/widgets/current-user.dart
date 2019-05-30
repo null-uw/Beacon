@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../utilities/device-location.dart';
 
 class CurrentUser extends StatefulWidget {
   @override
@@ -6,7 +10,19 @@ class CurrentUser extends StatefulWidget {
 }
 
 class _CurrentUserState extends State<CurrentUser> {
-  bool isSwitched = true;
+  final databaseReference = FirebaseDatabase.instance.reference();
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  bool isSwitched = false;
+
+  DeviceLocation deviceLocation = DeviceLocation();
+  LocationData currentLocation;
+
+  // Destroys stream when Widget is unmounted.
+  @override
+  void dispose() {
+    deviceLocation.cancelLocationSubscription();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext ctx) {
@@ -27,13 +43,34 @@ class _CurrentUserState extends State<CurrentUser> {
                   "First Last",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Text("email@email.com")
+                Text("email@email.com"),
+                Text(currentLocation == null
+                    ? ''
+                    : "Lat:${currentLocation.latitude.toStringAsFixed(8)}, Lng:${currentLocation.longitude.toStringAsFixed(8)}")
               ],
             ),
             Container(
               child: Switch(
                 value: isSwitched,
                 onChanged: (value) {
+                  if (value) {
+                    // if toggled on
+                    deviceLocation.startLocationSubscription(
+                        (LocationData location) {
+                      setState(() {
+                        currentLocation = location;
+                      });
+                      updateLocation(location);
+                    }, 100);
+                  } else {
+                    // when toggled off
+                    deviceLocation.cancelLocationSubscription();
+                    setState(() {
+                      currentLocation = null;
+                    });
+                    removeLocation();
+                  }
+
                   setState(() {
                     isSwitched = value;
                   });
@@ -43,5 +80,27 @@ class _CurrentUserState extends State<CurrentUser> {
           ],
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
         ));
+  }
+
+  updateLocation(LocationData loc) async {
+    FirebaseUser user = await firebaseAuth.currentUser();
+
+    //appends the user object to current users friends object
+    databaseReference
+        .child("locations")
+        .child(user.uid)
+        .child("location")
+        .set({"lat": loc.latitude, "lng": loc.longitude});
+  }
+
+  removeLocation() async {
+    FirebaseUser user = await firebaseAuth.currentUser();
+
+    //appends the user object to current users friends object
+    databaseReference
+        .child("locations")
+        .child(user.uid)
+        .child("location")
+        .remove();
   }
 }
