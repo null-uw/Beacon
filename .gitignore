@@ -34,7 +34,7 @@ mapbox_secret.json
 **/android/captures/
 **/android/gradlew
 **/android/gradlew.bat
-**/android/app/local.properties
+# **/android/app/local.properties
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
 
