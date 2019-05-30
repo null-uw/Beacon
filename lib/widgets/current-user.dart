@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../utilities/device-location.dart';
 
 class CurrentUser extends StatefulWidget {
@@ -10,6 +11,7 @@ class CurrentUser extends StatefulWidget {
 
 class _CurrentUserState extends State<CurrentUser> {
   final databaseReference = FirebaseDatabase.instance.reference();
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   bool isSwitched = false;
 
   DeviceLocation deviceLocation = DeviceLocation();
@@ -80,20 +82,24 @@ class _CurrentUserState extends State<CurrentUser> {
         ));
   }
 
-  updateLocation(LocationData loc) {
+  updateLocation(LocationData loc) async {
+    FirebaseUser user = await firebaseAuth.currentUser();
+
     //appends the user object to current users friends object
     databaseReference
         .child("locations")
-        .child("todo_current-user") // TODO: update with current user id
+        .child(user.uid)
         .child("location")
         .set({"lat": loc.latitude, "lng": loc.longitude});
   }
 
-  removeLocation() {
+  removeLocation() async {
+    FirebaseUser user = await firebaseAuth.currentUser();
+
     //appends the user object to current users friends object
     databaseReference
         .child("locations")
-        .child("todo_current-user") // TODO: update with current user id
+        .child(user.uid)
         .child("location")
         .remove();
   }

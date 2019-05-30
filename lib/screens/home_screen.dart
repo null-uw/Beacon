@@ -50,14 +50,16 @@ class HomeScreenState extends State<HomeScreen> {
   // Inner method 'iterateMapEntry' loops through returned snapshot,
   // instantiating new StreamSubscriptions if not found in state map.
   _onChange(Map value) {
-    void iterateMapEntry(key, value) {
-      if (!_locationSubscriptions.containsKey(key)) {
-        FirebaseConnector.getUserLocationStream(key, _onLocationChange)
-            .then((StreamSubscription s) => _locationSubscriptions[key] = s);
+    if (value != null) {
+      void iterateMapEntry(key, value) {
+        if (!_locationSubscriptions.containsKey(key)) {
+          FirebaseConnector.getUserLocationStream(key, _onLocationChange)
+              .then((StreamSubscription s) => _locationSubscriptions[key] = s);
+        }
       }
-    }
 
-    value.forEach(iterateMapEntry);
+      value.forEach(iterateMapEntry);
+    }
   }
 
   // Handles changes to a user's location node in Firebase Database.
