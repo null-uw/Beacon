@@ -58,21 +58,22 @@ class HomeScreenState extends State<HomeScreen> {
   // Updates state variable _userLocations with new value returned from Stream.
   _onLocationChange(String key, Map value) {
     Color color;
-    if (value.containsKey('location')) {
-      if (!_userLocations.containsKey(key) ||
-          _userLocations.containsKey(key) &&
-              !_userLocations[key].containsKey('color')) {
-        color =
-            _randomColor.randomColor(colorBrightness: ColorBrightness.light);
-        value['color'] = color;
-      } else {
-        value['color'] = _userLocations[key]['color'];
+    if (value != null) {
+      if (value.containsKey('location')) {
+        if (!_userLocations.containsKey(key) ||
+            _userLocations.containsKey(key) &&
+                !_userLocations[key].containsKey('color')) {
+          color =
+              _randomColor.randomColor(colorBrightness: ColorBrightness.light);
+          value['color'] = color;
+        } else {
+          value['color'] = _userLocations[key]['color'];
+        }
       }
+      setState(() {
+        _userLocations[key] = value;
+      });
     }
-
-    setState(() {
-      _userLocations[key] = value;
-    });
   }
 
   // Destroys all streams when Widget is unmounted.
