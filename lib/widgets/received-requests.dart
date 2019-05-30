@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // ReceivedRequest is a widget that renders a ListView of all received request within a Request widget
 class RecievedRequests extends StatelessWidget {
   final Map<dynamic, dynamic> data;
-  List requestListkeys = [];
-  List requestListValues = [];
   RecievedRequests({this.data});
 
   @override
   Widget build(BuildContext ctx) {
+    List requestListValues = [];
+    List requestListkeys = [];
+
     if (data != null) {
       requestListkeys = data.keys.toList();
       requestListValues = data.values.toList();
@@ -60,6 +62,9 @@ class SingleRequest extends StatelessWidget {
 
 //IconRow is a widget that renders the accept button and deny button for each request widget.
 class IconRow extends StatelessWidget {
+  final databaseReference = FirebaseDatabase.instance.reference();
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
   final request;
   IconRow(this.request);
 
@@ -70,46 +75,39 @@ class IconRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         IconButton(
-            icon: Icon(Icons.check),
-            onPressed: () => {acceptRequest(request)}),
+            icon: Icon(Icons.check), onPressed: () => {acceptRequest(request)}),
         IconButton(
             icon: Icon(Icons.close),
             onPressed: () => {removeRequest(request["id"])})
       ],
     ));
   }
-}
 
-final databaseReference = FirebaseDatabase.instance.reference();
+  //takes in a userID and removes the speceific request from the current users request object
+  removeRequest(userID) async {
+    FirebaseUser currentUser = await firebaseAuth.currentUser();
 
-//takes in a userID and removes the speceific request from the current users request object
-removeRequest(userID) {
-  databaseReference
-      .child("users")
-      .child(
-          "uid") // hardcoded to grab uid in FB. Will be changed to currenUser.uid once auth is established
-      .child("requests")
-      .child(userID)
-      .remove();
-}
+    databaseReference
+        .child("users")
+        .child(currentUser.uid)
+        .child("requests")
+        .child(userID)
+        .remove();
+  }
 
-//Takes in a request object, establishes a friendship between both users and removes the request from the request list.
-acceptRequest(request) {
+  //Takes in a request object, establishes a friendship between both users and removes the request from the request list.
+  acceptRequest(request) async {
+    FirebaseUser currentUser = await firebaseAuth.currentUser();
 
-  //appends the user object to current users friends object
-  databaseReference
-      .child("users")
-      .child(
-          "uid") // hardcoded to grab uid in FB. Will be changed to currenUser.uid once auth is established
-      .child("friends")
-      .child(request["id"])
-      .set({
-        "name" : request["name"],
-        "email" : request["email"]
-      });
-  
+    //appends the user object to current users friends object
+    databaseReference
+        .child("users")
+        .child(currentUser.uid)
+        .child("friends")
+        .child(request["id"])
+        .set({"name": request["name"], "email": request["email"]});
 
-  //add current user object to other users friend object
+    //add current user object to other users friend object
     //{
     // databaseReference
     //   .child("users")
@@ -123,6 +121,7 @@ acceptRequest(request) {
     //   }});
     //}
 
-  //removes the request from the firebase db
-      removeRequest(request["id"]);
+    //removes the request from the firebase db
+    removeRequest(request["id"]);
+  }
 }
