@@ -18,7 +18,6 @@ class FirebaseConnector {
         .child("friends")
         .onValue
         .listen((Event event) {
-          print("friendStream");
       onData(event.snapshot.value);
     });
   
@@ -34,9 +33,28 @@ class FirebaseConnector {
         .child(userKey)
         .onValue
         .listen((Event event) {
-          print(userKey + " : locationStream");
       onData(userKey, event.snapshot.value);
     });
     return subscription;
   }
+
+  // Creates a StreamSubscription to the current users request node in FB database
+  static Future<StreamSubscription<Event>> getUserRequestStream(
+      void onData(Map value)) async {
+    //FirebaseUser currentUser = await FirebaseAuth.instance.currentUser();
+
+    // Creates a StreamSubscription to the current user's friend node in FB database.
+    StreamSubscription<Event> subscription = FirebaseDatabase.instance
+        .reference()
+        .child("users")
+        .child("uid") // hardcoded to grab uid in FB. Will be changed to currenUser.uid once auth is established
+        .child("requests")
+        .onValue
+        .listen((Event event) {
+      onData(event.snapshot.value);
+    });
+  
+    return subscription;
+  }
 }
+
