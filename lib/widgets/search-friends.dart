@@ -7,8 +7,9 @@ class SearchFriends extends StatefulWidget {
 }
 
 class _SearchFriendsState extends State<SearchFriends> {
-  Map result;
   final databaseReference = FirebaseDatabase.instance.reference();
+  Map result;
+  bool noFound = false;
 
   @override
   Widget build(BuildContext ctx) {
@@ -31,28 +32,79 @@ class _SearchFriendsState extends State<SearchFriends> {
                 decoration: InputDecoration(
                     border: OutlineInputBorder(), hintText: "Search by email")),
           ),
-          result != null ? Text(result['name']) : Text('')
+          noFound ? NoFoundMessage() : SizedBox.shrink(),
+          result != null ? FoundResult(result: result) : SizedBox.shrink(),
         ],
       ),
     );
   }
 
   searchFriend(value) async {
-    print(value);
-
     DataSnapshot snapshot = await databaseReference
         .child("index")
         .orderByChild('email')
         .equalTo(value)
         .once();
 
-    var uid = snapshot.value.keys.first;
+    if (snapshot.value != null) {
+      var uid = snapshot.value.keys.first;
 
-    setState(() {
-      result = Map.from({
-        "name": snapshot.value[uid]['name'],
-        "email": snapshot.value[uid]['email']
+      setState(() {
+        result = Map.from({
+          "name": snapshot.value[uid]['name'],
+          "email": snapshot.value[uid]['email'],
+          'uid': uid
+        });
+        noFound = false;
       });
-    });
+    } else {
+      setState(() {
+        noFound = true;
+        result = null;
+      });
+    }
+  }
+}
+
+class NoFoundMessage extends StatelessWidget {
+  @override
+  Widget build(BuildContext ctx) {
+    return Center(
+      child: Column(
+        children: <Widget>[
+          Text(
+            "Sorry...",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          Text("There is no matching email.")
+        ],
+      ),
+    );
+  }
+}
+
+class FoundResult extends StatelessWidget {
+  FoundResult({@required this.result});
+  final Map result;
+
+  @override
+  Widget build(BuildContext ctx) {
+    return Column(
+      children: <Widget>[
+        Text("Search Results...", style: TextStyle(fontSize: 16)),
+        ListTile(
+          title: Text(result['name']),
+          subtitle: Text(result['email']),
+          trailing: FlatButton(
+            child: Text('Add Friend', style: TextStyle(color: Colors.blue)),
+            onPressed: addFriend,
+          ),
+        )
+      ],
+    );
+  }
+
+  addFriend() {
+    print(result['uid']);
   }
 }
