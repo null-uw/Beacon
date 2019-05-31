@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SearchFriends extends StatefulWidget {
   @override
@@ -83,28 +85,66 @@ class NoFoundMessage extends StatelessWidget {
   }
 }
 
-class FoundResult extends StatelessWidget {
+class FoundResult extends StatefulWidget {
   FoundResult({@required this.result});
+
   final Map result;
 
   @override
+  _FoundResultState createState() => _FoundResultState();
+}
+
+class _FoundResultState extends State<FoundResult> {
+  final databaseReference = FirebaseDatabase.instance.reference();
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+  bool confirmation = false;
+
+  @override
   Widget build(BuildContext ctx) {
-    return Column(
-      children: <Widget>[
-        Text("Search Results...", style: TextStyle(fontSize: 16)),
-        ListTile(
-          title: Text(result['name']),
-          subtitle: Text(result['email']),
-          trailing: FlatButton(
-            child: Text('Add Friend', style: TextStyle(color: Colors.blue)),
-            onPressed: addFriend,
-          ),
-        )
-      ],
-    );
+    return confirmation
+        ? Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.check, size: 24),
+                Text('Request Sent!')
+              ],
+            ))
+        : Column(
+            children: <Widget>[
+              Text("Search Results...", style: TextStyle(fontSize: 16)),
+              ListTile(
+                title: Text(widget.result['name']),
+                subtitle: Text(widget.result['email']),
+                trailing: FlatButton(
+                  child:
+                      Text('Add Friend', style: TextStyle(color: Colors.blue)),
+                  onPressed: addFriend,
+                ),
+              )
+            ],
+          );
   }
 
-  addFriend() {
-    print(result['uid']);
+  addFriend() async {
+    FirebaseUser currentUser = await firebaseAuth.currentUser();
+
+    DataSnapshot currentUserSnapshot = await databaseReference
+        .child("index")
+        .orderByChild('email')
+        .equalTo(currentUser.email)
+        .once();
+
+    await databaseReference
+        .child("users")
+        .child(widget.result['uid'])
+        .child("requests")
+        .set(currentUserSnapshot.value);
+
+    setState(() {
+      confirmation = true;
+    });
   }
 }
