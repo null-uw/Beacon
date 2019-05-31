@@ -84,44 +84,39 @@ class IconRow extends StatelessWidget {
   }
 
   //takes in a userID and removes the speceific request from the current users request object
-  removeRequest(userID) async {
+  removeRequest(otherUserID) async {
     FirebaseUser currentUser = await firebaseAuth.currentUser();
 
     databaseReference
         .child("users")
         .child(currentUser.uid)
         .child("requests")
-        .child(userID)
+        .child(otherUserID)
         .remove();
   }
 
   //Takes in a request object, establishes a friendship between both users and removes the request from the request list.
   acceptRequest(request) async {
     FirebaseUser currentUser = await firebaseAuth.currentUser();
+    final otherUserID = request["id"];
 
     //appends the user object to current users friends object
     databaseReference
         .child("users")
         .child(currentUser.uid)
         .child("friends")
-        .child(request["id"])
+        .child(otherUserID)
         .set({"name": request["name"], "email": request["email"]});
 
     //add current user object to other users friend object
-    //{
-    // databaseReference
-    //   .child("users")
-    //   .child(
-    //       request["id"]) // hardcoded to grab uid in FB. Will be changed to currenUser.uid once auth is established
-    //   .child("friends")
-    //   .set({
-    //   request["id"]: {
-    //     "name" : request["name"],
-    //     "email" : request["email"]
-    //   }});
-    //}
+    databaseReference
+        .child("users")
+        .child(otherUserID)
+        .child("friends")
+        .child(currentUser.uid)
+        .set({"name": currentUser.displayName, "email": currentUser.email});
 
     //removes the request from the firebase db
-    removeRequest(request["id"]);
+    removeRequest(otherUserID);
   }
 }
