@@ -9,6 +9,7 @@ class SearchFriends extends StatefulWidget {
 }
 
 class _SearchFriendsState extends State<SearchFriends> {
+  TextEditingController textFieldController = TextEditingController();
   final databaseReference = FirebaseDatabase.instance.reference();
   Map result;
   bool noFound = false;
@@ -21,18 +22,31 @@ class _SearchFriendsState extends State<SearchFriends> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text("Add friend",
-              style:
-                  new TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
+              style: new TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              )),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
             child: new TextField(
-                onSubmitted: searchFriend,
-                autocorrect: false,
-                textCapitalization: TextCapitalization.none,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.search,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), hintText: "Search by email")),
+              controller: textFieldController,
+              onChanged: clearResult,
+              onSubmitted: searchFriend,
+              autocorrect: false,
+              textCapitalization: TextCapitalization.none,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Search by email",
+                suffixIcon: textFieldController.text != ""
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: clearTextBox,
+                      )
+                    : SizedBox.shrink(),
+              ),
+            ),
           ),
           noFound ? NoFoundMessage() : SizedBox.shrink(),
           result != null ? FoundResult(result: result) : SizedBox.shrink(),
@@ -41,11 +55,24 @@ class _SearchFriendsState extends State<SearchFriends> {
     );
   }
 
+  clearTextBox() {
+    setState(() {
+      textFieldController.text = "";
+    });
+  }
+
+  clearResult(String _) {
+    setState(() {
+      result = null;
+      noFound = false;
+    });
+  }
+
   searchFriend(value) async {
     DataSnapshot snapshot = await databaseReference
         .child("index")
         .orderByChild('email')
-        .equalTo(value)
+        .equalTo(value.toString().trim())
         .once();
 
     if (snapshot.value != null) {
@@ -131,17 +158,21 @@ class _FoundResultState extends State<FoundResult> {
   addFriend() async {
     FirebaseUser currentUser = await firebaseAuth.currentUser();
 
-    DataSnapshot currentUserSnapshot = await databaseReference
+    DataSnapshot currentNameSnapshot = await databaseReference
         .child("index")
-        .orderByChild('email')
-        .equalTo(currentUser.email)
+        .child(currentUser.uid)
+        .child('name')
         .once();
+
+    String curEmail = currentUser.email;
+    String curName = currentNameSnapshot.value;
 
     await databaseReference
         .child("users")
         .child(widget.result['uid'])
         .child("requests")
-        .set(currentUserSnapshot.value);
+        .child(currentUser.uid)
+        .set({"name": curName, "email": curEmail});
 
     setState(() {
       confirmation = true;
