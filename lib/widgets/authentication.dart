@@ -56,6 +56,16 @@ class Auth implements BaseAuth {
 
   //Signs user out and returns uid
   Future<void> signOut() async {
+    FirebaseUser user = await _firebaseAuth.currentUser();
+
+    //appends the user object to current users friends object
+    _databaseReference
+        .child("locations")
+        .child(user.uid)
+        .child("location")
+        .remove();
+
+    // sign out
     return _firebaseAuth.signOut();
   }
 }
