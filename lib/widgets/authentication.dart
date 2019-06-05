@@ -25,6 +25,13 @@ class Auth implements BaseAuth {
   Future<String> signUp(String email, String password, String name) async {
     FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
+
+    // update the user's display name
+    final UserUpdateInfo userUpdateInfo = UserUpdateInfo();
+    userUpdateInfo.displayName = name;
+    await user.updateProfile(userUpdateInfo);
+
+    // create db entries
     await _databaseReference
         .child("locations")
         .child(user.uid)
@@ -33,6 +40,7 @@ class Auth implements BaseAuth {
         .child("index")
         .child(user.uid)
         .update({"name": name, "email": email});
+
     return user.uid;
   }
 

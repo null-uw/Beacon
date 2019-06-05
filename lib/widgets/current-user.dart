@@ -12,10 +12,24 @@ class CurrentUser extends StatefulWidget {
 class _CurrentUserState extends State<CurrentUser> {
   final databaseReference = FirebaseDatabase.instance.reference();
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  Map currentUser;
   bool isSwitched = false;
 
   DeviceLocation deviceLocation = DeviceLocation();
   LocationData currentLocation;
+
+  @override
+  initState() {
+    super.initState();
+
+    firebaseAuth.currentUser().then((user) {
+      databaseReference.child("index").child(user.uid).once().then((snapshot) {
+        setState(() {
+          currentUser = snapshot.value;
+        });
+      });
+    });
+  }
 
   // Destroys stream when Widget is unmounted.
   @override
@@ -38,16 +52,15 @@ class _CurrentUserState extends State<CurrentUser> {
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "First Last",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text("email@email.com"),
-                Text(currentLocation == null
-                    ? ''
-                    : "Lat:${currentLocation.latitude.toStringAsFixed(8)}, Lng:${currentLocation.longitude.toStringAsFixed(8)}")
-              ],
+              children: currentUser == null
+                  ? [Text("Loading...")]
+                  : [
+                      Text(
+                        currentUser['name'],
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(currentUser['email'])
+                    ],
             ),
             Container(
               child: Switch(
