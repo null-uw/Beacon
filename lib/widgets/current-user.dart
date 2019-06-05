@@ -12,7 +12,7 @@ class CurrentUser extends StatefulWidget {
 class _CurrentUserState extends State<CurrentUser> {
   final databaseReference = FirebaseDatabase.instance.reference();
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  FirebaseUser currentUser;
+  Map currentUser;
   bool isSwitched = false;
 
   DeviceLocation deviceLocation = DeviceLocation();
@@ -23,8 +23,10 @@ class _CurrentUserState extends State<CurrentUser> {
     super.initState();
 
     firebaseAuth.currentUser().then((user) {
-      setState(() {
-        currentUser = user;
+      databaseReference.child("index").child(user.uid).once().then((snapshot) {
+        setState(() {
+          currentUser = snapshot.value;
+        });
       });
     });
   }
@@ -54,10 +56,10 @@ class _CurrentUserState extends State<CurrentUser> {
                   ? [Text("Loading...")]
                   : [
                       Text(
-                        currentUser.displayName,
+                        currentUser['name'],
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Text(currentUser.email)
+                      Text(currentUser['email'])
                     ],
             ),
             Container(
