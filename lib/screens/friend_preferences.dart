@@ -34,6 +34,14 @@ class FriendPreferenceState extends State<FriendPreferences> {
     });
   }
 
+  @override
+  void dispose() {
+    if (requestSubscription != null) {
+      requestSubscription.cancel();
+    }
+    super.dispose();
+  }
+
   //Screen Layout
   @override
   Widget build(BuildContext ctx) {
