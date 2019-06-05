@@ -106,7 +106,7 @@ class IconRow extends StatelessWidget {
         .child(otherUserID)
         .child("friends")
         .child(currentUser.uid)
-        .set({"name": currentUser.displayName, "email": currentUser.email});
+        .set(true);
 
     //appends the user object to current users friends object
     await databaseReference
@@ -114,7 +114,7 @@ class IconRow extends StatelessWidget {
         .child(currentUser.uid)
         .child("friends")
         .child(otherUserID)
-        .set({"name": request["name"], "email": request["email"]});
+        .set(true);
 
     //removes the request from the firebase db
     await removeRequest(otherUserID);
