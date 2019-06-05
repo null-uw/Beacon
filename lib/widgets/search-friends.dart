@@ -69,6 +69,7 @@ class _SearchFriendsState extends State<SearchFriends> {
   }
 
   searchFriend(value) async {
+    var currentUser = await FirebaseAuth.instance.currentUser();
     DataSnapshot snapshot = await databaseReference
         .child("index")
         .orderByChild('email')
@@ -78,14 +79,22 @@ class _SearchFriendsState extends State<SearchFriends> {
     if (snapshot.value != null) {
       var uid = snapshot.value.keys.first;
 
-      setState(() {
-        result = Map.from({
-          "name": snapshot.value[uid]['name'],
-          "email": snapshot.value[uid]['email'],
-          'uid': uid
+      if (uid == currentUser.uid) {
+        // don't show found if searching for self
+        setState(() {
+          noFound = true;
+          result = null;
         });
-        noFound = false;
-      });
+      } else {
+        setState(() {
+          result = Map.from({
+            "name": snapshot.value[uid]['name'],
+            "email": snapshot.value[uid]['email'],
+            'uid': uid
+          });
+          noFound = false;
+        });
+      }
     } else {
       setState(() {
         noFound = true;
