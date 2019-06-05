@@ -33,11 +33,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   //Will validate and attempt to login or sign up user through firebase
   void _validateAndSubmit() async {
-    setState(() {
-      _errorMessage = "";
-      _isLoading = true;
-    });
     if (_validateAndSave()) {
+      setState(() {
+        _errorMessage = "";
+        _isLoading = true;
+      });
       String userId = "";
       try {
         if (_formMode == FormMode.LOGIN) {
