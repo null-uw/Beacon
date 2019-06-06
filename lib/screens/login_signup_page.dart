@@ -41,10 +41,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       String userId = "";
       try {
         if (_formMode == FormMode.LOGIN) {
-          userId = await widget.auth.signIn(_email, _password);
+          userId = await widget.auth.signIn(_email.trim(), _password.trim());
           print('Signed in : $userId');
         } else {
-          userId = await widget.auth.signUp(_email, _password, _name);
+          userId = await widget.auth
+              .signUp(_email.trim(), _password.trim(), _name.trim());
           print('Sign up user: $userId');
         }
         //After signing in the callback function from root will cause a rebuild and open up home screen
