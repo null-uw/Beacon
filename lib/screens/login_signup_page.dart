@@ -59,6 +59,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           _errorMessage = e.message;
         });
       }
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
