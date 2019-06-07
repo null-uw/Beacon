@@ -12,7 +12,7 @@ class _SearchFriendsState extends State<SearchFriends> {
   TextEditingController textFieldController = TextEditingController();
   final databaseReference = FirebaseDatabase.instance.reference();
   Map result;
-  bool noFound = false;
+  String noFound;
 
   @override
   Widget build(BuildContext ctx) {
@@ -48,7 +48,9 @@ class _SearchFriendsState extends State<SearchFriends> {
               ),
             ),
           ),
-          noFound ? NoFoundMessage() : SizedBox.shrink(),
+          noFound != null
+              ? NoFoundMessage(message: noFound)
+              : SizedBox.shrink(),
           result != null ? FoundResult(result: result) : SizedBox.shrink(),
         ],
       ),
@@ -64,7 +66,7 @@ class _SearchFriendsState extends State<SearchFriends> {
   clearResult(String _) {
     setState(() {
       result = null;
-      noFound = false;
+      noFound = null;
     });
   }
 
@@ -86,31 +88,56 @@ class _SearchFriendsState extends State<SearchFriends> {
           .child(uid)
           .once();
 
-      if (uid == currentUser.uid || friendsSnapshot.value != null) {
-        setState(() {
-          noFound = true;
+      DataSnapshot requestsSnapshot = await databaseReference
+          .child("users")
+          .child(currentUser.uid)
+          .child("requests")
+          .child(uid)
+          .once();
+
+      if (uid == currentUser.uid) {
+        return setState(() {
+          noFound = "Cannot add yourself as friend.";
           result = null;
         });
-      } else {
-        setState(() {
-          result = Map.from({
-            "name": snapshot.value[uid]['name'],
-            "email": snapshot.value[uid]['email'],
-            'uid': uid
-          });
-          noFound = false;
+      }
+      if (friendsSnapshot.value != null) {
+        return setState(() {
+          noFound = "Cannot add existing friend.";
+          result = null;
         });
       }
-    } else {
-      setState(() {
-        noFound = true;
-        result = null;
+      if (requestsSnapshot.value != null) {
+        return setState(() {
+          noFound = "You already have a pending request.";
+          result = null;
+        });
+      }
+
+      // show user that is found
+      return setState(() {
+        result = Map.from({
+          "name": snapshot.value[uid]['name'],
+          "email": snapshot.value[uid]['email'],
+          'uid': uid
+        });
+        noFound = null;
       });
     }
+
+    // no user found
+    return setState(() {
+      noFound = "There is no matching email.";
+      result = null;
+    });
   }
 }
 
 class NoFoundMessage extends StatelessWidget {
+  NoFoundMessage({this.message});
+
+  final String message;
+
   @override
   Widget build(BuildContext ctx) {
     return Center(
@@ -120,7 +147,7 @@ class NoFoundMessage extends StatelessWidget {
             "Sorry...",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          Text("There is no matching email.")
+          Text(message)
         ],
       ),
     );
