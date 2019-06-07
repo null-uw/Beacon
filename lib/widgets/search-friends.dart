@@ -76,19 +76,17 @@ class _SearchFriendsState extends State<SearchFriends> {
         .equalTo(value.toString().trim())
         .once();
 
-    DataSnapshot friendsSnapshot = await databaseReference
-        .child("users")
-        .child(currentUser.uid)
-        .child("friends")
-        .once();
-
     if (snapshot.value != null) {
       var uid = snapshot.value.keys.first;
 
-      List excludedUids = List.from(friendsSnapshot.value.keys);
-      excludedUids.add(currentUser.uid);
+      DataSnapshot friendsSnapshot = await databaseReference
+          .child("users")
+          .child(currentUser.uid)
+          .child("friends")
+          .child(uid)
+          .once();
 
-      if (excludedUids.contains(uid)) {
+      if (uid == currentUser.uid || friendsSnapshot.value != null) {
         setState(() {
           noFound = true;
           result = null;
