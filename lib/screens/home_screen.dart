@@ -117,7 +117,7 @@ class HomeScreenState extends State<HomeScreen> {
               title: new Text("Are you sure you want to sign out?"),
               actions: <Widget>[
                 new FlatButton(
-                  child: new Text("Close"),
+                  child: new Text("Cancel"),
                   onPressed: () {
                     Navigator.of(dialogCtx).pop();
                   },
